@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="450dp"
+    android:background="#FFFFFF"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/home_head"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/home_head_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="15"
+            android:background="#E4E4E4"
+            android:gravity="center"
+            android:lines="1"
+            android:text="组图信息"
+            android:textSize="24sp" />
+
+    </LinearLayout>
+
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:id="@+id/themeinfo_quit"
+            android:layout_width="52dp"
+            android:layout_height="32dp"
+            android:layout_marginLeft="12dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="5dp"
+            android:background="@drawable/home_button_shape"
+            android:text="返回"
+            android:textColor="#FFFFFF" />
+    </RelativeLayout>
+
+    <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:id="@+id/allinfo"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginBottom="8dp"
+            android:background="#FFFFFF"
+            android:gravity="left"
+            android:orientation="vertical"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:paddingBottom="6dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:context="com.sznews.upload.uploadpicture.activity.themeinfoActivity">
+
+            <LinearLayout
+                android:id="@+id/themeinfo_line1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/themeinfo_line1_text"
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="12dp"
+                    android:text="一级分类 :"
+                    android:textSize="18sp"></TextView>
+
+                <TextView
+                    android:id="@+id/themeinfo_category1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="分类一"
+                    android:textSize="18sp"></TextView>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/themeinfo_line2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/themeinfo_line2_text"
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="12dp"
+                    android:text="二级分类 :"
+                    android:textSize="18sp"></TextView>
+
+                <TextView
+                    android:id="@+id/themeinfo_category2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="分类二"
+                    android:textSize="18sp"></TextView>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/themeinfo_line3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/themeinfo_line3_text"
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="12dp"
+                    android:text="标题 :"
+                    android:textSize="18sp"></TextView>
+
+                <TextView
+                    android:id="@+id/themeinfo_theme"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="标题"
+                    android:textSize="18sp"></TextView>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/themeinfo_line4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/themeinfo_line4_text1"
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="12dp"
+                    android:text="日期 :"
+                    android:textSize="18sp"></TextView>
+
+                <TextView
+                    android:id="@+id/themeinfo_date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="2018-11-08 16:00:00"
+                    android:textSize="18sp"></TextView>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/themeinfo_line5"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/themeinfo_line5_text"
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="12dp"
+                    android:text="图片来源 :"
+                    android:textSize="18sp"></TextView>
+
+                <TextView
+                    android:id="@+id/themeinfo_source"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="深圳新闻网"
+                    android:textSize="18sp"></TextView>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/themeinfo_line6"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/themeinfo_line6_text1"
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="12dp"
+                    android:text="作者 :"
+                    android:textSize="18sp"></TextView>
+
+                <TextView
+                    android:id="@+id/themeinfo_username"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="20dp"
+                    android:text="编辑名"
+                    android:textSize="18sp"></TextView>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/themeinfo_line7"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/themeinfo_line7_text"
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="12dp"
+                    android:text="图组说明 :"
+                    android:textSize="18sp"></TextView>
+
+                <TextView
+                    android:id="@+id/themeinfo_explain"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="20dp"
+                    android:text="深圳新闻网传媒股份有限公司"
+                    android:textSize="18sp"></TextView>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/themeinfo_line8"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/themeinfo_line8_text"
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="12dp"
+                    android:text="图片 :"
+                    android:textSize="18sp"></TextView>
+            </LinearLayout>
+
+            <ImageView
+                android:id="@+id/themeinfo_pic"
+                android:layout_width="103dp"
+                android:layout_height="73dp"
+                android:layout_marginTop="5dp"
+                app:srcCompat="@drawable/upload" />
+
+        </LinearLayout>
+
+    </android.support.constraint.ConstraintLayout>
+</LinearLayout>

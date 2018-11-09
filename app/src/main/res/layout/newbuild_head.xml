@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="450dp"
+    android:background="#FFFFFF"
+    android:orientation="vertical">
+
+    <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:id="@+id/linearLayout"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginBottom="8dp"
+            android:background="#FFFFFF"
+            android:gravity="left"
+            android:orientation="vertical"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:paddingBottom="6dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:context="com.sznews.upload.uploadpicture.activity.NewBuildActivity">
+
+            <LinearLayout
+                android:id="@+id/newbuild_line1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/newbuild_line1_text"
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="12dp"
+                    android:text="一级分类 :"
+                    android:textSize="18sp"></TextView>
+
+                <Spinner
+                    android:id="@+id/category1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:entries="@array/data1" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/newbuild_line2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/newbuild_line2_text"
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="12dp"
+                    android:text="二级分类 :"
+                    android:textSize="18sp"></TextView>
+
+                <Spinner
+                    android:id="@+id/category2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:entries="@array/data2" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/newbuild_line3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/newbuild_line3_text"
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="12dp"
+                    android:text="标题 :"
+                    android:textSize="18sp"></TextView>
+
+                <EditText
+                    android:id="@+id/theme"
+                    android:layout_width="205dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:ems="10"
+                    android:hint="请输入图组标题"
+                    android:inputType="textPersonName"
+                    android:textColor="#AEAEAE"
+                    android:textSize="18sp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/newbuild_line4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/newbuild_line4_text1"
+                    android:layout_width="101dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="12dp"
+                    android:text="日期 :"
+                    android:textSize="18sp"></TextView>
+
+                <TextView
+                    android:id="@+id/date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:textSize="18sp"></TextView>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/newbuild_line5"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/newbuild_line5_text"
+                    android:layout_width="103dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="12dp"
+                    android:text="图片来源 :"
+                    android:textSize="18sp"></TextView>
+
+                <EditText
+                    android:id="@+id/source"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:ems="10"
+                    android:hint="请输入来源"
+                    android:inputType="textPersonName"
+                    android:textColor="#AEAEAE"
+                    android:textSize="18sp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/newbuild_line6"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/newbuild_line6_text1"
+                    android:layout_width="105dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="12dp"
+                    android:text="作者 :"
+                    android:textSize="18sp"></TextView>
+
+                <TextView
+                    android:id="@+id/username"
+                    android:layout_width="95dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="20dp"
+                    android:text=""
+                    android:textSize="18sp"></TextView>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/newbuild_line7"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/newbuild_line7_text"
+                    android:layout_width="106dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="12dp"
+                    android:text="图组说明 :"
+                    android:textSize="18sp"></TextView>
+
+
+                <EditText
+                    android:id="@+id/explain"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@android:drawable/edit_text"
+                    android:enabled="true"
+                    android:gravity="top"
+                    android:hint="请输入组图说明"
+                    android:inputType="textMultiLine"
+                    android:maxLines="6"
+                    android:minLines="6"
+                    android:lines="6"
+                    android:scrollbars="vertical"
+                    android:textColor="@android:color/darker_gray"
+                    android:textSize="16sp"></EditText>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/newbuild_line8"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/newbuild_line8_text"
+                    android:layout_width="105dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="12dp"
+                    android:text="图片 :"
+                    android:textSize="18sp"></TextView>
+
+                <Button
+                    android:id="@+id/add_button"
+                    android:layout_width="58dp"
+                    android:layout_height="33dp"
+                    android:background="@drawable/home_button_shape"
+                    android:text="添加"
+                    android:textColor="#FFFFFF"
+                    android:textSize="18sp" />
+            </LinearLayout>
+
+            <!--<ImageView-->
+                <!--android:id="@+id/imageView6"-->
+                <!--android:layout_width="103dp"-->
+                <!--android:layout_height="73dp"-->
+                <!--android:layout_marginTop="5dp"-->
+                <!--app:srcCompat="@drawable/upload" />-->
+
+            <!--<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="match_parent"-->
+            <!--android:layout_marginTop="10dp"-->
+            <!--android:orientation="vertical">-->
+
+            <!--<android.support.v4.widget.SwipeRefreshLayout-->
+            <!--android:id="@+id/headlines_swipeRefreshLayout"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="match_parent">-->
+
+            <!--<com.sznews.upload.uploadpicture.utils.LoadListView-->
+            <!--android:id="@+id/listView"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="match_parent"></com.sznews.upload.uploadpicture.utils.LoadListView>-->
+
+            <!--</android.support.v4.widget.SwipeRefreshLayout>-->
+
+            <!--</LinearLayout>-->
+
+        </LinearLayout>
+
+    </android.support.constraint.ConstraintLayout>
+</LinearLayout>

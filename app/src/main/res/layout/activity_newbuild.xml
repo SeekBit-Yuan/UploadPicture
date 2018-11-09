@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF"
+    android:orientation="vertical">
+
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:id="@+id/newbuild_quit"
+            android:layout_width="52dp"
+            android:layout_height="32dp"
+            android:layout_marginLeft="12dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="5dp"
+            android:background="@drawable/home_button_shape"
+            android:text="返回"
+            android:textColor="#FFFFFF" />
+
+        <Button
+            android:id="@+id/upload"
+            android:layout_width="52dp"
+            android:layout_height="32dp"
+            android:layout_alignTop="@+id/newbuild_quit"
+            android:layout_alignParentRight="true"
+            android:layout_marginTop="0dp"
+            android:layout_marginRight="12dp"
+            android:background="@drawable/home_button_shape"
+            android:text="上传"
+            android:textColor="#FFFFFF" />
+    </RelativeLayout>
+
+    <ListView
+        android:id="@+id/lv_pic"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"></ListView>
+
+</LinearLayout>

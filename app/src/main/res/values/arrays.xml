@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="data1">
+        <item>分类1</item>
+        <item>分类2</item>
+        <item>分类3</item>
+        <item>分类4</item>
+        <item>分类5</item>
+        <item>分类6</item>
+        <item>分类7</item>
+    </string-array>
+
+    <string-array name="data2">
+        <item>分类8</item>
+        <item>分类9</item>
+        <item>分类10</item>
+        <item>分类11</item>
+        <item>分类12</item>
+        <item>分类13</item>
+        <item>分类14</item>
+    </string-array>
+</resources>
