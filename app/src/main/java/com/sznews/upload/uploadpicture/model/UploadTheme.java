@@ -16,7 +16,6 @@ public class UploadTheme {
     private int state;
 
     public UploadTheme(){
-
     }
 
     public UploadTheme(String theme,String date,String path,String username,int userid,String description,String category1,String category2,int dutyid,int sum,int num,int state){
