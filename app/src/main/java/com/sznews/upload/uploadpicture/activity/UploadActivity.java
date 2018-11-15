@@ -37,10 +37,13 @@ public class UploadActivity extends AppCompatActivity implements RadioGroup.OnCh
         uploadlist = (RadioButton) findViewById(R.id.radio_uploadlist);
         homepage.setChecked(true);
         int id = getIntent().getIntExtra("id", 0);
-        if (id == 1) {
+        if (id != 0) {
             homepage.setChecked(false);
+            FragmentTransaction transaction = fragmentManager.beginTransaction();
+            transaction.hide(homepageFragment);
             uploadlist.setChecked(true);
-            code = 1;
+            code = id;
+            System.out.println("code:"+code);
         }
     }
 
