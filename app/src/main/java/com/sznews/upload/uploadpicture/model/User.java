@@ -11,7 +11,6 @@ import java.util.Random;
 public class User {
     private String username;
     private String userpass;
-    private String verifycode;
     private String token;
     private String appid = "d2a57dc1d883fd21fb9951699df71cc7";
     private String scode;
@@ -33,14 +32,6 @@ public class User {
 
     public void setUserpass(String userpass) {
         this.userpass = userpass;
-    }
-
-    public String getVerifycode() {
-        return verifycode;
-    }
-
-    public void setVerifycode(String verifycode) {
-        this.verifycode = verifycode;
     }
 
     public String getToken() {
@@ -92,4 +83,13 @@ public class User {
     public void setNonce(String nonce) {
         this.nonce = nonce;
     }
+
+    public String getScode() {
+        return scode;
+    }
+
+    public void setScode(String scode) {
+        this.scode = scode;
+    }
+
 }

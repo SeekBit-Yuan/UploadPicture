@@ -6,16 +6,24 @@ package com.sznews.upload.uploadpicture.model;
 
 public class Picture {
     private String title;
-    private String desc;
     private String pic_path;
+    private int dutyid;
+    private int state;
 
     public Picture(String pic_path){
-        setPic_url(pic_path);
+        setPic_path(pic_path);
     }
 
     public Picture(String title, String pic_path){
         setTitle(title);
-        setPic_url(pic_path);
+        setPic_path(pic_path);
+    }
+
+    public Picture(String title, String pic_path,int dutyid,int state){
+        setTitle(title);
+        setPic_path(pic_path);
+        setDutyid(dutyid);
+        setState(state);
     }
 
     public String getTitle() {
@@ -26,21 +34,27 @@ public class Picture {
         this.title = title;
     }
 
-    public String getDesc() {
-        return desc;
-    }
-
-    public void setDesc(String desc) {
-        this.desc = desc;
-    }
-
-
-    public String getpic_path() {
+    public String getPic_path() {
         return pic_path;
     }
 
-    public void setPic_url(String pic_path) {
+    public void setPic_path(String pic_path) {
         this.pic_path = pic_path;
     }
 
+    public int getDutyid() {
+        return dutyid;
+    }
+
+    public void setDutyid(int dutyid) {
+        this.dutyid = dutyid;
+    }
+
+    public int getState() {
+        return state;
+    }
+
+    public void setState(int state) {
+        this.state = state;
+    }
 }

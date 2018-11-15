@@ -10,6 +10,7 @@ import android.graphics.Paint;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.sznews.upload.uploadpicture.model.User;
+import com.sznews.upload.uploadpicture.url.InterfaceJsonfile;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -90,15 +91,15 @@ public class CodeUtils {
 
     //获取验证码
     public String createCode() {
-        verifyCode = getVerifyCode("http://v1.sznews.com/appuploader/user/sCodeProducer");
+        verifyCode = getVerifyCode(InterfaceJsonfile.VerifyCode);
         Gson gson = new GsonBuilder().create();
         User user = gson.fromJson(verifyCode, User.class);
         if (user == null) {
             verifyCode = null;
             return verifyCode;
         }else {
-            verifyCode = user.getVerifycode();
-            //System.out.println("=================================" + verifyCode);
+            verifyCode = user.getScode();
+//            System.out.println("=========================verifyCode：" + verifyCode);
             return verifyCode;
         }
     }

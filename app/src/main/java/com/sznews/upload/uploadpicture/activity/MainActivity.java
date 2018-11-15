@@ -16,7 +16,11 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.sznews.upload.uploadpicture.R;
+import com.sznews.upload.uploadpicture.model.Result;
+import com.sznews.upload.uploadpicture.url.InterfaceJsonfile;
 import com.sznews.upload.uploadpicture.utils.CodeUtils;
 import com.sznews.upload.uploadpicture.model.User;
 import com.sznews.upload.uploadpicture.utils.Utils;
@@ -48,6 +52,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Button submit;
     private String usernameStr, passwordStr, verifyStr;
     private CodeUtils codeUtils;
+    private int uid = 0;
 
     private Handler handler = new Handler() {
         @Override
@@ -95,6 +100,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.img_verify:
+                System.out.print("sss");
                 //获取验证码图片
                 createVerifyImage();
                 break;
@@ -102,53 +108,56 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 usernameStr = username.getText().toString().trim();
                 passwordStr = password.getText().toString().trim();
                 verifyStr = verify.getText().toString().trim();
-//                if (null == usernameStr || TextUtils.isEmpty(usernameStr)) {
-//                    Toast.makeText(this, "用户名不能为空", Toast.LENGTH_SHORT).show();
-//                    return;
-//                }
-//                if (null == passwordStr || TextUtils.isEmpty(passwordStr)) {
-//                    Toast.makeText(this, "密码不能为空", Toast.LENGTH_SHORT).show();
-//                    return;
-//                }
-//                if (null == verifyStr || TextUtils.isEmpty(verifyStr)) {
-//                    Toast.makeText(this, "请输入验证码", Toast.LENGTH_SHORT).show();
-//                    return;
-//                }
+                if (null == usernameStr || TextUtils.isEmpty(usernameStr)) {
+                    Toast.makeText(this, "用户名不能为空", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                if (null == passwordStr || TextUtils.isEmpty(passwordStr)) {
+                    Toast.makeText(this, "密码不能为空", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                if (null == verifyStr || TextUtils.isEmpty(verifyStr)) {
+                    Toast.makeText(this, "请输入验证码", Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 String code = codeUtils.getCode();
                 //判断验证码的正确性，正确则提交用户信息
 //                verifyStr.equalsIgnoreCase(code)
-                if (true) {
-//                    //验证用户名密码
-//                    new Thread(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            //验证用户名密码
-//                            String result = verifyUsernameAndPassword();
-//                            //获取返回的登录情况
-//                            Gson gson = new GsonBuilder().create();
-//                            Result result1 = gson.fromJson(result, Result.class);
-//                            if (result1.getState().equals("1")) {
-//                                System.out.println("================================密码或用户名错误，登录失败！");
-//                                Message msg = new Message();
-//                                msg.what = 2;
-//                                handler.sendMessage(msg);
-//                            } else if (result1.getState().equals("0")) {
-//                                System.out.println("================================登录成功！" + result1.getToken() + result1.getMsg());
-//                                Message msg = new Message();
-//                                msg.what = 1;
-//                                handler.sendMessage(msg);
-//                                //跳转到主页面
-//                                Intent intent=new Intent();
-//                                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
-//                                intent.setClass(MainActivity.this, UploadActivity.class);
-//                                startActivity(intent);
-//                            } /*else {
-//                                System.out.println("================================登录失败,请稍后再尝试登录！");
-//                            }*/
-//                        }
-//                    }).start();
-//                    //保存用户信息
-//                    saveUserInfo();
+                if (verifyStr.equalsIgnoreCase(code)) {
+                    //验证用户名密码
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            //验证用户名密码
+                            String result = verifyUsernameAndPassword();
+                            //获取返回的登录情况
+                            Gson gson = new GsonBuilder().create();
+                            Result result1 = gson.fromJson(result, Result.class);
+
+                            if (result1.getState().equals("1")) {
+                                System.out.println("================================密码或用户名错误，登录失败！");
+                                Message msg = new Message();
+                                msg.what = 2;
+                                handler.sendMessage(msg);
+                            } else if (result1.getState().equals("0")) {
+                                System.out.println("================================登录成功！" + result1.getToken() + result1.getMsg());
+                                Message msg = new Message();
+                                msg.what = 1;
+                                handler.sendMessage(msg);
+                                uid = Integer.parseInt(result1.getMsg());
+                                System.out.println("uid:" + uid);
+                                //跳转到主页面
+                                Intent intent=new Intent();
+                                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
+                                intent.setClass(MainActivity.this, UploadActivity.class);
+                                startActivity(intent);
+                            } /*else {
+                                System.out.println("================================登录失败,请稍后再尝试登录！");
+                            }*/
+                        }
+                    }).start();
+                    //保存用户信息
+                    saveUserInfo(uid);
                     Intent intent=new Intent();
                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
                     intent.setClass(MainActivity.this, UploadActivity.class);
@@ -172,11 +181,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 String code = codeUtils.getCode();
                 //判断验证码是否获取成功,成功则绘制验证码并显示，不成功则显示默认图片
                 if (code != null && !code.equals("")){
-                    //System.out.println("++++++++++++++++++++" + code);
+                    System.out.println("++++++++++++++++++++" + code);
                     Message msg = new Message();
                     msg.what = 0;
                     msg.obj = bitmap;
                     handler.sendMessage(msg);
+                } else {
+                    System.out.println("++++++++++++++++++++" + code);
                 }
             }
         }).start();
@@ -184,11 +195,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     //存储用户名、密码和保存状态
-    public void saveUserInfo() {
+    public void saveUserInfo(int uid) {
         //默认自动存储用户名
         SharedPreferences sp = this.getSharedPreferences("userInfo", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sp.edit();
         editor.putString("username", usernameStr);
+        editor.putString("uid", String.valueOf(uid));
         //判断是否存储密码
         if (rememberPassword.isChecked()) {
             editor.putString("password", passwordStr);
@@ -203,7 +215,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     //验证用户名密码
     public String verifyUsernameAndPassword() {
         //String path = "http://172.16.137.198:8080/VueServer/server";
-        String path = "http://v1.sznews.com/AppUploader/user/loginHandle";
+        String path = InterfaceJsonfile.LOGIN;
         URL url;
         String lines = "";
         try {
@@ -223,7 +235,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             user.setUsername(usernameStr);
             user.setUserpass(passwordStr);
             String signature = Utils.getSignature(user);
-            System.out.println(signature);
+            System.out.println("signature:"+signature);
             StringBuffer sb = new StringBuffer();
             sb.append("{\"username\":\"").append(usernameStr).append("\"")
                     .append(",\"userpass\":\"").append(passwordStr).append("\"")
@@ -238,7 +250,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             BufferedReader reader = new BufferedReader(new InputStreamReader(
                     conn.getInputStream()));
             lines = reader.readLine();//读取请求结果
+            System.out.println("lines:"+lines);
             reader.close();
+            conn.disconnect();
         } catch (IOException e) {
             e.printStackTrace();
             Message msg = new Message();

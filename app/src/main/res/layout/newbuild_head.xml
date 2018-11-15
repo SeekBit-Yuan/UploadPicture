@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="450dp"
+    android:layout_height="460dp"
     android:background="#FFFFFF"
     android:orientation="vertical">
 
@@ -33,7 +33,7 @@
             <LinearLayout
                 android:id="@+id/newbuild_line1"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="32dp"
                 android:layout_marginTop="10dp"
                 android:orientation="horizontal">
 
@@ -41,7 +41,7 @@
                     android:id="@+id/newbuild_line1_text"
                     android:layout_width="100dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginRight="12dp"
+                    android:layout_marginRight="6dp"
                     android:text="一级分类 :"
                     android:textSize="18sp"></TextView>
 
@@ -49,8 +49,9 @@
                     android:id="@+id/category1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:entries="@array/data1" />
-
+                    android:spinnerMode="dropdown"
+                    android:ellipsize="end"
+                    android:layout_marginRight="6dp"/>
             </LinearLayout>
 
             <LinearLayout
@@ -64,7 +65,7 @@
                     android:id="@+id/newbuild_line2_text"
                     android:layout_width="100dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginRight="12dp"
+                    android:layout_marginRight="6dp"
                     android:text="二级分类 :"
                     android:textSize="18sp"></TextView>
 
@@ -72,7 +73,8 @@
                     android:id="@+id/category2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:entries="@array/data2" />
+                    android:ellipsize="end"
+                    android:spinnerMode="dropdown" />
 
             </LinearLayout>
 
@@ -87,7 +89,7 @@
                     android:id="@+id/newbuild_line3_text"
                     android:layout_width="100dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginRight="12dp"
+                    android:layout_marginRight="6dp"
                     android:text="标题 :"
                     android:textSize="18sp"></TextView>
 
@@ -115,7 +117,7 @@
                     android:id="@+id/newbuild_line4_text1"
                     android:layout_width="101dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginRight="12dp"
+                    android:layout_marginRight="6dp"
                     android:text="日期 :"
                     android:textSize="18sp"></TextView>
 
@@ -139,21 +141,16 @@
                     android:id="@+id/newbuild_line5_text"
                     android:layout_width="103dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginRight="12dp"
+                    android:layout_marginRight="6dp"
                     android:text="图片来源 :"
                     android:textSize="18sp"></TextView>
 
-                <EditText
+                <TextView
                     android:id="@+id/source"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:ems="10"
-                    android:hint="请输入来源"
-                    android:inputType="textPersonName"
-                    android:textColor="#AEAEAE"
-                    android:textSize="18sp" />
-
+                    android:text="深新网图片库"
+                    android:textSize="18sp"></TextView>
             </LinearLayout>
 
             <LinearLayout
@@ -167,7 +164,7 @@
                     android:id="@+id/newbuild_line6_text1"
                     android:layout_width="105dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginRight="12dp"
+                    android:layout_marginRight="6dp"
                     android:text="作者 :"
                     android:textSize="18sp"></TextView>
 
@@ -191,7 +188,7 @@
                     android:id="@+id/newbuild_line7_text"
                     android:layout_width="106dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginRight="12dp"
+                    android:layout_marginRight="6dp"
                     android:text="图组说明 :"
                     android:textSize="18sp"></TextView>
 
@@ -205,9 +202,9 @@
                     android:gravity="top"
                     android:hint="请输入组图说明"
                     android:inputType="textMultiLine"
+                    android:lines="6"
                     android:maxLines="6"
                     android:minLines="6"
-                    android:lines="6"
                     android:scrollbars="vertical"
                     android:textColor="@android:color/darker_gray"
                     android:textSize="16sp"></EditText>
@@ -225,7 +222,7 @@
                     android:id="@+id/newbuild_line8_text"
                     android:layout_width="105dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginRight="12dp"
+                    android:layout_marginRight="6dp"
                     android:text="图片 :"
                     android:textSize="18sp"></TextView>
 
@@ -240,11 +237,11 @@
             </LinearLayout>
 
             <!--<ImageView-->
-                <!--android:id="@+id/imageView6"-->
-                <!--android:layout_width="103dp"-->
-                <!--android:layout_height="73dp"-->
-                <!--android:layout_marginTop="5dp"-->
-                <!--app:srcCompat="@drawable/upload" />-->
+            <!--android:id="@+id/imageView6"-->
+            <!--android:layout_width="103dp"-->
+            <!--android:layout_height="73dp"-->
+            <!--android:layout_marginTop="5dp"-->
+            <!--app:srcCompat="@drawable/upload" />-->
 
             <!--<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
             <!--android:layout_width="match_parent"-->

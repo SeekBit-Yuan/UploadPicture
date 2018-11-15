@@ -9,6 +9,7 @@ public class Result {
     private String state;
     private String msg;
     private String token;
+    private String dutyid;
 
     public String getState() {
         return state;
@@ -32,5 +33,11 @@ public class Result {
 
     public void setToken(String token) {
         this.token = token;
+    }
+
+    public String getDutyid(){ return dutyid;}
+
+    public void setDutyid(String dutyid) {
+        this.dutyid = dutyid;
     }
 }

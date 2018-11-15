@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="450dp"
+    android:layout_height="match_parent"
     android:background="#FFFFFF"
     android:orientation="vertical">
 
@@ -84,7 +84,7 @@
                     android:id="@+id/themeinfo_category1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="分类一"
+                    android:text=""
                     android:textSize="18sp"></TextView>
 
             </LinearLayout>
@@ -108,7 +108,7 @@
                     android:id="@+id/themeinfo_category2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="分类二"
+                    android:text=""
                     android:textSize="18sp"></TextView>
 
             </LinearLayout>
@@ -132,7 +132,7 @@
                     android:id="@+id/themeinfo_theme"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="标题"
+                    android:text=""
                     android:textSize="18sp"></TextView>
 
             </LinearLayout>
@@ -156,7 +156,7 @@
                     android:id="@+id/themeinfo_date"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="2018-11-08 16:00:00"
+                    android:text=""
                     android:textSize="18sp"></TextView>
 
             </LinearLayout>
@@ -180,7 +180,7 @@
                     android:id="@+id/themeinfo_source"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="深圳新闻网"
+                    android:text="新闻网图片库"
                     android:textSize="18sp"></TextView>
 
             </LinearLayout>
@@ -205,7 +205,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginRight="20dp"
-                    android:text="编辑名"
+                    android:text=""
                     android:textSize="18sp"></TextView>
             </LinearLayout>
 
@@ -229,7 +229,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginRight="20dp"
-                    android:text="深圳新闻网传媒股份有限公司"
+                    android:text=""
                     android:textSize="18sp"></TextView>
 
             </LinearLayout>
@@ -250,13 +250,22 @@
                     android:textSize="18sp"></TextView>
             </LinearLayout>
 
-            <ImageView
-                android:id="@+id/themeinfo_pic"
-                android:layout_width="103dp"
-                android:layout_height="73dp"
-                android:layout_marginTop="5dp"
-                app:srcCompat="@drawable/upload" />
+            <!--<ImageView-->
+                <!--android:id="@+id/themeinfo_pic"-->
+                <!--android:layout_width="103dp"-->
+                <!--android:layout_height="73dp"-->
+                <!--android:layout_marginTop="5dp"-->
+                <!--app:srcCompat="@drawable/upload" />-->
 
+            <GridView
+                android:id="@+id/themeinfo_gridview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:numColumns="3"
+                android:horizontalSpacing="10dp"
+                android:verticalSpacing="10dp"
+                android:layout_marginTop="5dp">
+            </GridView>
         </LinearLayout>
 
     </android.support.constraint.ConstraintLayout>

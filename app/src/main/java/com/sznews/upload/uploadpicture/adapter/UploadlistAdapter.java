@@ -53,49 +53,50 @@ public class UploadlistAdapter extends BaseAdapter {
         final ImageView play = view.findViewById(R.id.uploadlist_button);
         final TextView state = view.findViewById(R.id.uploadlist_statetext);
 
-        UploadTheme uploadTheme = uploadList.get(position);
+        final UploadTheme uploadTheme = uploadList.get(position);
         String path = uploadTheme.getPath();
         theme.setText(uploadTheme.getTheme());
         date.setText(uploadTheme.getDate());
+//        state.setText(uploadTheme.getNum() + "/" +uploadTheme.getSum());
 
-        if (uploadTheme.getState() == "0") {
+        if (uploadTheme.getState() == 0) {
             play.setImageDrawable(context.getResources().getDrawable(R.drawable.finish));
             play.setClickable(false);
             state.setText("已完成");
-            //点击跳转详情页查看
-            view.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Intent intent = new Intent(context, ThemeInfoActivity.class);
-                    intent.putExtra("code", "0");
-                    context.startActivity(intent);
-                }
-            });
-        } else if (uploadTheme.getState() == "1") {
+//            //点击跳转详情页查看
+//            view.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View view) {
+//                    Intent intent = new Intent(context, ThemeInfoActivity.class);
+//                    intent.putExtra("code", "0");
+//                    context.startActivity(intent);
+//                }
+//            });
+        } else if (uploadTheme.getState() == 1) {
             play.setImageDrawable(context.getResources().getDrawable(R.drawable.uploading));
             play.setClickable(false);
-            state.setText("上传中");
-        } else if (uploadTheme.getState() == "2") {
+            state.setText(uploadTheme.getNum() + "/" +uploadTheme.getSum());
+        } else if (uploadTheme.getState() == 2) {
             play.setImageDrawable(context.getResources().getDrawable(R.drawable.play));
             state.setText("已暂停");
             play.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     play.setImageDrawable(context.getResources().getDrawable(R.drawable.uploading));
-                    state.setText("上传中");
+                    state.setText(uploadTheme.getNum() + "/" +uploadTheme.getSum());
                 }
             });
         }
 
-//        //点击跳转详情页查看
-//        view.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Intent intent = new Intent(context, ThemeInfoActivity.class);
-//                intent.putExtra("code", "0");
-//                context.startActivity(intent);
-//            }
-//        });
+        //点击跳转详情页查看
+        view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(context, ThemeInfoActivity.class);
+                intent.putExtra("dutyid", uploadTheme.getDutyid());
+                context.startActivity(intent);
+            }
+        });
 
         //默认占位图设置
         RequestOptions options = new RequestOptions()
@@ -115,5 +116,15 @@ public class UploadlistAdapter extends BaseAdapter {
     @Override
     public boolean isEnabled(int position) {
         return false;
+    }
+
+    /**
+     * 对外更改数据源的方法
+     * @param list
+     */
+    public void addData(List<UploadTheme> list){
+        this.uploadList.clear();
+        this.uploadList.addAll(list);
+        this.notifyDataSetChanged();
     }
 }

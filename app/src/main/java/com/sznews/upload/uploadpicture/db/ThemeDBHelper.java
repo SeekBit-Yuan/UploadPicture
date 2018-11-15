@@ -1,4 +1,4 @@
-package com.sznews.upload.uploadpicture.utils;
+package com.sznews.upload.uploadpicture.db;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
@@ -17,11 +17,10 @@ public class ThemeDBHelper extends SQLiteOpenHelper {
         //创建主题表subject和图片表picture
         String createSubjectTable = "create table subject (_id integer primary key autoincrement, " +
                 "category1 text, category2 text, theme text, " +
-
-                "create_date integer, soucre text, username text, " +
-                "description text, theme_token text)";
+                "create_date integer, soucre text, username text, uid int, " +
+                "description text, path text, total int,uploaded int, dutyid int, state int)";
         String createPictureTable = "create table picture (_id integer primary key autoincrement, " +
-                "path text, title text, theme_token text, state int)";
+                "path text, title text, dutyid int, state int)";
         db.execSQL(createSubjectTable);
         db.execSQL(createPictureTable);
     }

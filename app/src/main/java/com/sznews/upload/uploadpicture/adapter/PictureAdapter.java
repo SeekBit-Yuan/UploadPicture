@@ -100,7 +100,7 @@ public class PictureAdapter extends BaseAdapter {
             }
         });
 
-        String pic_path = picture.getpic_path();
+        String pic_path = picture.getPic_path();
 
         //默认占位图设置
         RequestOptions options = new RequestOptions()
