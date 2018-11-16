@@ -5,6 +5,7 @@ package com.sznews.upload.uploadpicture.model;
  */
 
 public class Picture {
+    private int picid;
     private String title;
     private String pic_path;
     private int dutyid;
@@ -19,12 +20,17 @@ public class Picture {
         setPic_path(pic_path);
     }
 
-    public Picture(String title, String pic_path,int dutyid,int state){
+    public Picture(int picid,String title, String pic_path,int dutyid,int state){
+        setPicid(picid);
         setTitle(title);
         setPic_path(pic_path);
         setDutyid(dutyid);
         setState(state);
     }
+
+    public int getPicid(){ return picid; }
+
+    public void setPicid(int picid){ this.picid = picid; }
 
     public String getTitle() {
         return title;

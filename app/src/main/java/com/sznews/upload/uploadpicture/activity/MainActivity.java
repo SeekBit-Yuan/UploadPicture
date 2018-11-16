@@ -34,11 +34,16 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-
-@ContentView(R.layout.activity_main)
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
+    /*@Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+    }*/
     private final int VERIFY_CODE_NO_NULL = 0;//获取验证码成功
     private final int LOGIN_SUCCESS = 1;//登录成功
     private final int LOGIN_FAIL = 2;//登录失败
@@ -52,7 +57,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Button submit;
     private String usernameStr, passwordStr, verifyStr;
     private CodeUtils codeUtils;
-    private int uid = 0;
 
     private Handler handler = new Handler() {
         @Override
@@ -69,8 +73,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //setContentView(R.layout.activity_main);
-        x.view().inject(this);
+        setContentView(R.layout.activity_main);
         initView();
     }
 
@@ -100,11 +103,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.img_verify:
-                System.out.print("sss");
                 //获取验证码图片
                 createVerifyImage();
                 break;
             case R.id.btn_login:
+                /*Intent intent;
+                intent = new Intent(MainActivity.this, UploadActivity.class);
+                startActivity(intent);*/
                 usernameStr = username.getText().toString().trim();
                 passwordStr = password.getText().toString().trim();
                 verifyStr = verify.getText().toString().trim();
@@ -115,15 +120,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 if (null == passwordStr || TextUtils.isEmpty(passwordStr)) {
                     Toast.makeText(this, "密码不能为空", Toast.LENGTH_SHORT).show();
                     return;
+                } else {
+                    //验证密码格式
+                    String regEx = "(?![0-9A-Z]+$)(?![0-9a-z]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{8,20}$";
+                    Pattern pattern = Pattern.compile(regEx);
+                    Matcher matcher = pattern.matcher(passwordStr);
+                    boolean rs = matcher.matches();
+                    if (rs == false) {
+                        Toast.makeText(this, "密码是包含大小写字母以及数字的6到15位密码", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
                 }
-                if (null == verifyStr || TextUtils.isEmpty(verifyStr)) {
-                    Toast.makeText(this, "请输入验证码", Toast.LENGTH_SHORT).show();
-                    return;
-                }
+//                if (null == verifyStr || TextUtils.isEmpty(verifyStr)) {
+////                    Toast.makeText(this, "请输入验证码", Toast.LENGTH_SHORT).show();
+////                    return;
+////                }
                 String code = codeUtils.getCode();
                 //判断验证码的正确性，正确则提交用户信息
 //                verifyStr.equalsIgnoreCase(code)
-                if (verifyStr.equalsIgnoreCase(code)) {
+                if (true) {
                     //验证用户名密码
                     new Thread(new Runnable() {
                         @Override
@@ -133,7 +148,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             //获取返回的登录情况
                             Gson gson = new GsonBuilder().create();
                             Result result1 = gson.fromJson(result, Result.class);
-
                             if (result1.getState().equals("1")) {
                                 System.out.println("================================密码或用户名错误，登录失败！");
                                 Message msg = new Message();
@@ -141,15 +155,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                 handler.sendMessage(msg);
                             } else if (result1.getState().equals("0")) {
                                 System.out.println("================================登录成功！" + result1.getToken() + result1.getMsg());
+                                System.out.println("================================登录成功！" + result1.getMsg());
+                                SharedPreferences sp = getApplication().getSharedPreferences("userInfo", Context.MODE_PRIVATE);
+                                SharedPreferences.Editor editor = sp.edit();
+                                editor.putString("token", result1.getToken());
+                                editor.putString("userid", result1.getMsg());
+                                editor.commit();
                                 Message msg = new Message();
                                 msg.what = 1;
                                 handler.sendMessage(msg);
-                                uid = Integer.parseInt(result1.getMsg());
-                                System.out.println("uid:" + uid);
                                 //跳转到主页面
-                                Intent intent=new Intent();
-                                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
-                                intent.setClass(MainActivity.this, UploadActivity.class);
+                                Intent intent;
+                                intent = new Intent(MainActivity.this, UploadActivity.class);
                                 startActivity(intent);
                             } /*else {
                                 System.out.println("================================登录失败,请稍后再尝试登录！");
@@ -157,11 +174,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         }
                     }).start();
                     //保存用户信息
-                    saveUserInfo(uid);
-                    Intent intent=new Intent();
-                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
-                    intent.setClass(MainActivity.this, UploadActivity.class);
-                    startActivity(intent);
+                    saveUserInfo();
                 } else {
                     Toast.makeText(this, "验证码错误", Toast.LENGTH_SHORT).show();
                 }
@@ -169,6 +182,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             default:
                 break;
         }
+
     }
 
     //绘制验证码图片
@@ -181,13 +195,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 String code = codeUtils.getCode();
                 //判断验证码是否获取成功,成功则绘制验证码并显示，不成功则显示默认图片
                 if (code != null && !code.equals("")){
-                    System.out.println("++++++++++++++++++++" + code);
+                    //System.out.println("++++++++++++++++++++" + code);
                     Message msg = new Message();
                     msg.what = 0;
                     msg.obj = bitmap;
                     handler.sendMessage(msg);
-                } else {
-                    System.out.println("++++++++++++++++++++" + code);
                 }
             }
         }).start();
@@ -195,12 +207,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     //存储用户名、密码和保存状态
-    public void saveUserInfo(int uid) {
+    public void saveUserInfo() {
         //默认自动存储用户名
         SharedPreferences sp = this.getSharedPreferences("userInfo", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sp.edit();
         editor.putString("username", usernameStr);
-        editor.putString("uid", String.valueOf(uid));
         //判断是否存储密码
         if (rememberPassword.isChecked()) {
             editor.putString("password", passwordStr);
@@ -215,7 +226,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     //验证用户名密码
     public String verifyUsernameAndPassword() {
         //String path = "http://172.16.137.198:8080/VueServer/server";
-        String path = InterfaceJsonfile.LOGIN;
+        String path = "http://v1.sznews.com/appupload/user/loginhandle";
+        //String path = "http://172.16.140.123:10001/appuploader/user/loginhandle";
         URL url;
         String lines = "";
         try {
@@ -226,7 +238,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             conn.setDoInput(true);
             conn.setDoOutput(true);
             //设置请求头里面的数据，以下设置用于解决http请求code415的问题
-            conn.setRequestProperty("Content-Type", "application/json");
+            conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+            //conn.setRequestProperty("Content-Type", "application/json");
             //链接地址
             conn.connect();
             OutputStreamWriter writer = new OutputStreamWriter(conn.getOutputStream());
@@ -235,7 +248,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             user.setUsername(usernameStr);
             user.setUserpass(passwordStr);
             String signature = Utils.getSignature(user);
-            System.out.println("signature:"+signature);
+            System.out.println(signature);
             StringBuffer sb = new StringBuffer();
             sb.append("{\"username\":\"").append(usernameStr).append("\"")
                     .append(",\"userpass\":\"").append(passwordStr).append("\"")
@@ -244,13 +257,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     .append(",\"timestamp\":\"").append(user.getTimestamp()).append("\"")
                     .append(",\"nonce\":\"").append(user.getNonce()).append("\"")
                     .append("}");
+            System.out.println(sb.toString());
             writer.write(sb.toString());
-            //清理当前编辑器的左右缓冲区，并使缓冲区数据写入基础流
+            //刷新缓冲区使数据写入基础流，并清理当前编辑器的左右缓冲区
             writer.flush();
             BufferedReader reader = new BufferedReader(new InputStreamReader(
                     conn.getInputStream()));
             lines = reader.readLine();//读取请求结果
-            System.out.println("lines:"+lines);
             reader.close();
             conn.disconnect();
         } catch (IOException e) {
@@ -261,4 +274,5 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         return lines;
     }
+
 }

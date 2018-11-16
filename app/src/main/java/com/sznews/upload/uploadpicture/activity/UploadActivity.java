@@ -22,13 +22,14 @@ public class UploadActivity extends AppCompatActivity implements RadioGroup.OnCh
     private HomepageFragment homepageFragment;
     private UploadlistFragment uploadlistFragment;
 
-    private FragmentManager fragmentManager;
+//    private FragmentManager fragmentManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start);
 
+        FragmentManager fragmentManager;
         fragmentManager = getSupportFragmentManager();
         radioGroup = findViewById(R.id.radioGroup);
         radioGroup.setOnCheckedChangeListener(this);
@@ -38,9 +39,11 @@ public class UploadActivity extends AppCompatActivity implements RadioGroup.OnCh
         homepage.setChecked(true);
         int id = getIntent().getIntExtra("id", 0);
         if (id != 0) {
-            homepage.setChecked(false);
             FragmentTransaction transaction = fragmentManager.beginTransaction();
             transaction.hide(homepageFragment);
+            uploadlistFragment = new UploadlistFragment();
+            transaction.add(R.id.Fragment, uploadlistFragment);
+            transaction.commit();
             uploadlist.setChecked(true);
             code = id;
             System.out.println("code:"+code);
@@ -50,6 +53,7 @@ public class UploadActivity extends AppCompatActivity implements RadioGroup.OnCh
 
     @Override
     public void onCheckedChanged(RadioGroup group, int checkedId) {
+        FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fTransaction = fragmentManager.beginTransaction();
         hideFragment(fTransaction);
         switch (checkedId) {

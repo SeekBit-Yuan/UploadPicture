@@ -13,11 +13,14 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.media.ExifInterface;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.AdapterView;
@@ -107,15 +110,14 @@ public class NewBuildActivity extends AppCompatActivity{
     private int dutyid;
     //SQLite
     private SQLiteDatabase db;
-
     //添加按钮点击次数
     int addnum = 0;
-
     //第一个分类
     int num;
-
     //userid
     int uid = 0;
+    //网络连接状态：0：无网络连接；1：wifi已连接；2：移动流量已连接：3：WiFi和移动流量已连接
+    int state = 0;
 
     @ViewInject(R.id.newbuild_quit)
     private Button quit;
@@ -181,6 +183,8 @@ public class NewBuildActivity extends AppCompatActivity{
                                     //插入数据库
                                     ThemeDBHelper themeDBHelper = new ThemeDBHelper(NewBuildActivity.this);
                                     db = themeDBHelper.getWritableDatabase();
+//                                    db.execSQL("delete from subject");
+//                                    db.execSQL("delete from picture");
 
                                     //插入主题信息
                                     ContentValues values = new ContentValues();
@@ -320,7 +324,7 @@ public class NewBuildActivity extends AppCompatActivity{
         Date date = new Date(System.currentTimeMillis());
         textView1.setText(simpleDateFormat.format(date));
         //获取uid
-        uid = Integer.parseInt(sp.getString("uid", ""));
+        uid = Integer.parseInt(sp.getString("userid", ""));
 
         Drawable drawable = getResources().getDrawable(R.drawable.upload);
         String defaultpath = DrawableToString(drawable);
@@ -398,48 +402,9 @@ public class NewBuildActivity extends AppCompatActivity{
                 System.out.println("");
             }
 //            GetExifInfo(path);//获取EXIF信息
-//            System.out.println(array1.toString());
             c.close();
         }
     }
-
-//    //请求dutyid
-//    public void GetDutyid(){
-//        JSONObject object = new JSONObject();
-//        JSONArray array = new JSONArray();
-//        try {
-//            object.put("username",username);
-//            object.put("userid",String.valueOf(uid));
-//            array.put(object);
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        }
-//
-//        RequestParams params = new RequestParams("http://v1.sznews.com/appupload/Duty/CreateDuty");
-//        params.addQueryStringParameter("username",object.toString());
-////        params.addQueryStringParameter("userid",String.valueOf(uid));
-//        x.http().post(params, new Callback.CommonCallback<String>() {
-//            @Override
-//            public void onSuccess(String result) {
-//                dutyid = Integer.parseInt(result);
-//                System.out.println("dutyid:"+dutyid);
-//            }
-//
-//            @Override
-//            public void onError(Throwable ex, boolean isOnCallback) {
-//                Toast.makeText(NewBuildActivity.this, "请求失败", Toast.LENGTH_SHORT).show();
-//                System.out.println("ex:"+ ex);
-//            }
-//
-//            @Override
-//            public void onCancelled(CancelledException cex) {
-//            }
-//
-//            @Override
-//            public void onFinished() {
-//            }
-//        });
-//    }
 
     //获取dutyid
     public String GetDutyid() {
@@ -508,8 +473,7 @@ public class NewBuildActivity extends AppCompatActivity{
                     .getAttribute(ExifInterface.TAG_ORIENTATION);//TAG_ORIENTATION：旋转角度，整形表示，在ExifInterface中有常量对应表示。
             String FWhiteBalance = exifInterface
                     .getAttribute(ExifInterface.TAG_WHITE_BALANCE);//TAG_WHITE_BALANCE：白平衡。
-                                                                   //TAG_GPS_LATITUDE 纬度
-                                                                   //TAG_GPS_LATITUDE_REF 纬度参考
+
             try {
                 object1.put("FFNumber",FFNumber);
                 object1.put("FDateTime",FDateTime);
@@ -530,60 +494,6 @@ public class NewBuildActivity extends AppCompatActivity{
         }catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
-        }
-    }
-
-    //上传文件方法
-    public void upload(View v, final String path) {
-        //String url = "http://172.16.137.198:8080/VueServer/upload";
-        if (path != null && !path.equals("")) {
-            String url = "http://v1.sznews.com/jtpic/uploads/streamupload";
-            RequestParams params = new RequestParams(url);
-            params.setMultipart(true);
-            params.addBodyParameter("file", new File(path));
-            try{
-                String s = URLEncoder.encode(path.substring(path.lastIndexOf("/") + 1), "utf-8");
-                params.addBodyParameter("EXIFInfo", array1.toString());
-                params.addBodyParameter("pictureInfo", array2.toString());
-            }catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
-
-            //设置上传提示框
-            final ZLoadingDialog dialog = new ZLoadingDialog(NewBuildActivity.this);
-            dialog.setLoadingBuilder(Z_TYPE.STAR_LOADING)//设置类型
-                    .setLoadingColor(Color.BLACK)//颜色
-                    .setHintText("上传中...")
-                    .setCanceledOnTouchOutside(false)
-                    .show();
-
-            x.http().post(params, new Callback.CommonCallback<String>() {
-                @Override
-                public void onSuccess(String result) {
-                    System.out.println("===============上传成功"  + result);
-                    dialog.dismiss();//上传成功后关闭提示框
-                    Toast.makeText(NewBuildActivity.this, "上传成功", Toast.LENGTH_SHORT).show();
-                    finish();
-                }
-
-                @Override
-                public void onError(Throwable ex, boolean isOnCallback) {
-                    System.out.println("===============上传失败");
-                    ex.printStackTrace();
-                    dialog.dismiss();//上传成功后关闭提示框
-                    Toast.makeText(NewBuildActivity.this, "上传失败", Toast.LENGTH_SHORT).show();
-                }
-
-                @Override
-                public void onCancelled(CancelledException cex) {
-                }
-
-                @Override
-                public void onFinished() {
-                }
-            });
-        } else {
-            Toast.makeText(this, "请选择图片，再上传", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -623,5 +533,17 @@ public class NewBuildActivity extends AppCompatActivity{
             }
         }
         return true;
+    }
+
+    //判断网络连接状态
+    public int ACCESS_NETWORK_STATE(){
+        ConnectivityManager mConnectivity = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
+        TelephonyManager mTelephony = (TelephonyManager)this.getSystemService(TELEPHONY_SERVICE);
+//检查网络连接
+        NetworkInfo info = mConnectivity.getActiveNetworkInfo();
+        if (info == null || !mConnectivity.getBackgroundDataSetting()) {
+            return 1;
+        }
+        return 1;
     }
 }

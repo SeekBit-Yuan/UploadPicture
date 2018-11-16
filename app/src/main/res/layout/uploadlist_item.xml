@@ -54,7 +54,7 @@
         app:layout_constraintHorizontal_bias="0.966"
         app:layout_constraintStart_toEndOf="@+id/uploadlist_pic"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/finish" />
+        app:srcCompat="@drawable/uploading" />
 
     <TextView
         android:id="@+id/uploadlist_statetext"
@@ -63,7 +63,7 @@
         android:layout_marginTop="8dp"
         android:layout_marginEnd="18dp"
         android:gravity="center"
-        android:text="已完成"
+        android:text="上传中"
         android:textColor="@android:color/darker_gray"
         android:textSize="10sp"
         app:layout_constraintBottom_toBottomOf="@+id/uploadlist_date"

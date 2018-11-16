@@ -45,23 +45,25 @@ public class UploadlistAdapter extends BaseAdapter {
     @Override
     public View getView(final int position, final View convertView, ViewGroup parent) {
         LayoutInflater inflater = LayoutInflater.from(context);
-        final View view = inflater.inflate(R.layout.uploadlist_item, null);
+        View view = inflater.inflate(R.layout.uploadlist_item, null);
 
         ImageView ivPic = view.findViewById(R.id.uploadlist_pic);
         TextView theme = view.findViewById(R.id.uploadlist_theme);
         TextView date = view.findViewById(R.id.uploadlist_date);
-        final ImageView play = view.findViewById(R.id.uploadlist_button);
-        final TextView state = view.findViewById(R.id.uploadlist_statetext);
+        ImageView play = view.findViewById(R.id.uploadlist_button);
+        TextView state = view.findViewById(R.id.uploadlist_statetext);
 
-        final UploadTheme uploadTheme = uploadList.get(position);
+        UploadTheme uploadTheme = uploadList.get(position);
         String path = uploadTheme.getPath();
         theme.setText(uploadTheme.getTheme());
         date.setText(uploadTheme.getDate());
-//        state.setText(uploadTheme.getNum() + "/" +uploadTheme.getSum());
+        int sum = uploadTheme.getSum();
+        int num = uploadTheme.getNum();
+        final int dutyid = uploadTheme.getDutyid();
 
         if (uploadTheme.getState() == 0) {
             play.setImageDrawable(context.getResources().getDrawable(R.drawable.finish));
-            play.setClickable(false);
+//            play.setClickable(false);
             state.setText("已完成");
 //            //点击跳转详情页查看
 //            view.setOnClickListener(new View.OnClickListener() {
@@ -74,16 +76,16 @@ public class UploadlistAdapter extends BaseAdapter {
 //            });
         } else if (uploadTheme.getState() == 1) {
             play.setImageDrawable(context.getResources().getDrawable(R.drawable.uploading));
-            play.setClickable(false);
-            state.setText(uploadTheme.getNum() + "/" +uploadTheme.getSum());
+//            play.setClickable(false);
+            state.setText(num + "/" + sum);
         } else if (uploadTheme.getState() == 2) {
             play.setImageDrawable(context.getResources().getDrawable(R.drawable.play));
             state.setText("已暂停");
             play.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    play.setImageDrawable(context.getResources().getDrawable(R.drawable.uploading));
-                    state.setText(uploadTheme.getNum() + "/" +uploadTheme.getSum());
+//                    play.setImageDrawable(context.getResources().getDrawable(R.drawable.uploading));
+//                    state.setText(uploadTheme.getNum() + "/" +uploadTheme.getSum());
                 }
             });
         }
@@ -93,7 +95,7 @@ public class UploadlistAdapter extends BaseAdapter {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(context, ThemeInfoActivity.class);
-                intent.putExtra("dutyid", uploadTheme.getDutyid());
+                intent.putExtra("dutyid", dutyid);
                 context.startActivity(intent);
             }
         });

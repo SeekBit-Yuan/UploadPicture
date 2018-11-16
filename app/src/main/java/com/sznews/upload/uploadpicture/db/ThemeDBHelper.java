@@ -20,7 +20,7 @@ public class ThemeDBHelper extends SQLiteOpenHelper {
                 "create_date integer, soucre text, username text, uid int, " +
                 "description text, path text, total int,uploaded int, dutyid int, state int)";
         String createPictureTable = "create table picture (_id integer primary key autoincrement, " +
-                "path text, title text, dutyid int, state int)";
+                "path text, title text,picid int, dutyid int, state int)";
         db.execSQL(createSubjectTable);
         db.execSQL(createPictureTable);
     }
