@@ -15,7 +15,9 @@ public class User {
     private String appid = "d2a57dc1d883fd21fb9951699df71cc7";
     private String scode;
     private String timestamp = String.valueOf(new Date().getTime());
+    private String checkcode;
     private String nonce = getRandomNum();
+    private String appsecret = "dbaeee203864aada45af1afb181ceb26";
     //签名、时间戳、随机数、用户名、用户密码、appid
 
     public String getUsername() {
@@ -92,4 +94,19 @@ public class User {
         this.scode = scode;
     }
 
+    public String getCheckcode() {
+        return checkcode;
+    }
+
+    public void setCheckcode(String checkcode) {
+        this.checkcode = checkcode;
+    }
+
+    public String getAppsecret() {
+        return appsecret;
+    }
+
+    public void setAppsecret(String appsecret) {
+        this.appsecret = appsecret;
+    }
 }

@@ -79,7 +79,7 @@ public class NewBuildActivity extends AppCompatActivity{
     private EditText editText1;
     private TextView textView1;
     private TextView editText2;
-    private TextView textView2;
+    private EditText editText4;
     private EditText editText3;
     private String spinnerselect1;
     private String spinnerselect2;
@@ -87,6 +87,7 @@ public class NewBuildActivity extends AppCompatActivity{
     private String datetime;
     private String source;
     private String username;
+    private String author;
     private String explain;
     //上下文对象
     private Context context;
@@ -147,7 +148,7 @@ public class NewBuildActivity extends AppCompatActivity{
                 title = editText1.getText().toString().trim();
                 datetime = textView1.getText().toString().trim();
                 source = editText2.getText().toString().trim();
-                username = textView2.getText().toString().trim();
+                author = editText4.getText().toString().trim();
                 explain = editText3.getText().toString().trim();
 
                 if(null == title || TextUtils.isEmpty(title)){
@@ -155,6 +156,9 @@ public class NewBuildActivity extends AppCompatActivity{
                     return;
                 }else if(null == source || TextUtils.isEmpty(source)){
                     Toast.makeText(NewBuildActivity.this, "请输入来源", Toast.LENGTH_SHORT).show();
+                    return;
+                }else if(null == author || TextUtils.isEmpty(author)){
+                    Toast.makeText(NewBuildActivity.this, "请输入作者", Toast.LENGTH_SHORT).show();
                     return;
                 }else if(null == explain || TextUtils.isEmpty(explain)){
                     Toast.makeText(NewBuildActivity.this, "请输入说明", Toast.LENGTH_SHORT).show();
@@ -194,6 +198,7 @@ public class NewBuildActivity extends AppCompatActivity{
                                     values.put("create_date", datetime);
                                     values.put("soucre", source);
                                     values.put("username", username);
+                                    values.put("author", author);
                                     values.put("uid", uid);
                                     values.put("description", explain);
                                     values.put("path", PictureList.get(0).getPic_path());
@@ -235,7 +240,7 @@ public class NewBuildActivity extends AppCompatActivity{
         editText1 = vHead.findViewById(R.id.theme);
         textView1 = vHead.findViewById(R.id.date);
         editText2 = vHead.findViewById(R.id.source);
-        textView2 = vHead.findViewById(R.id.username);
+        editText4 = vHead.findViewById(R.id.author);
         editText3 = vHead.findViewById(R.id.explain);
 
         //头布局放入ListView中
@@ -318,13 +323,14 @@ public class NewBuildActivity extends AppCompatActivity{
         //获取用户名
         SharedPreferences sp = this.getSharedPreferences("userInfo", Context.MODE_PRIVATE);
         String usernameStr = sp.getString("username", "");
-        textView2.setText(usernameStr);
+//        editText4.setText(usernameStr);
+        username = usernameStr;
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");// HH:mm:ss
         //获取当前时间
         Date date = new Date(System.currentTimeMillis());
         textView1.setText(simpleDateFormat.format(date));
         //获取uid
-        uid = Integer.parseInt(sp.getString("userid", ""));
+        //uid = Integer.parseInt(sp.getString("userid", ""));
 
         Drawable drawable = getResources().getDrawable(R.drawable.upload);
         String defaultpath = DrawableToString(drawable);
@@ -339,6 +345,11 @@ public class NewBuildActivity extends AppCompatActivity{
                 //动态获取权限
                 verifyStoragePermissions(NewBuildActivity.this);
 
+                if(PictureList.size() > 17){
+                    Toast.makeText(NewBuildActivity.this, "超过图片上传张数", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 //清除之前选择的图片信息
                 object1 =new JSONObject();
                 object2 =new JSONObject();
@@ -348,7 +359,7 @@ public class NewBuildActivity extends AppCompatActivity{
                 title = editText1.getText().toString().trim();
                 datetime = textView1.getText().toString().trim();
                 source = editText2.getText().toString().trim();
-                username = textView2.getText().toString().trim();
+                author = editText4.getText().toString().trim();
                 explain = editText3.getText().toString().trim();
 
                 try {
@@ -357,6 +368,8 @@ public class NewBuildActivity extends AppCompatActivity{
                     object2.put("title",title);
                     object2.put("datetime",datetime);
                     object2.put("source",source);
+                    object2.put("username",username);
+                    object2.put("author",author);
                     object2.put("explain",explain);
                     array2.put(object2);
                 }catch (Exception e){
@@ -408,6 +421,8 @@ public class NewBuildActivity extends AppCompatActivity{
 
     //获取dutyid
     public String GetDutyid() {
+        SharedPreferences sp = this.getSharedPreferences("userInfo", Context.MODE_PRIVATE);
+        String token = sp.getString("token", "");
         String path = InterfaceJsonfile.DutyID;
         URL url;
         String lines = "";
@@ -426,6 +441,7 @@ public class NewBuildActivity extends AppCompatActivity{
             StringBuffer sb = new StringBuffer();
             sb.append("{\"username\":\"").append(username).append("\"")
                     .append(",\"userid\":\"").append(String.valueOf(uid)).append("\"")
+                    .append(",\"token\":\"").append(token).append("\"")
                     .append("}");
             writer.write(sb.toString());
             //清理当前编辑器的左右缓冲区，并使缓冲区数据写入基础流

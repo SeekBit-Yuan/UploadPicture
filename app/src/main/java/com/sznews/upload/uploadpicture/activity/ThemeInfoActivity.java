@@ -79,6 +79,7 @@ public class ThemeInfoActivity extends Activity {
                 String date = cursor.getString(cursor.getColumnIndex("create_date"));
                 String path = cursor.getString(cursor.getColumnIndex("path"));
                 String username = cursor.getString(cursor.getColumnIndex("username"));
+                String author = cursor.getString(cursor.getColumnIndex("author"));
                 int userid = cursor.getColumnIndex("uid");
                 String description = cursor.getString(cursor.getColumnIndex("description"));
                 String category1 = cursor.getString(cursor.getColumnIndex("category1"));
@@ -87,7 +88,7 @@ public class ThemeInfoActivity extends Activity {
                 int sum = cursor.getInt(cursor.getColumnIndex("total"));
                 int num = cursor.getInt(cursor.getColumnIndex("uploaded"));
                 int state = cursor.getColumnIndex("state");//"0"：已上传成功，"1"：正在上传，"2"：暂停上传等待中
-                uploadThemeList.add(new UploadTheme(theme, date, path, username, userid, description, category1, category2, dutyid, sum, num, state));
+                uploadThemeList.add(new UploadTheme(theme, date, path, username, author, userid, description, category1, category2, dutyid, sum, num, state));
             } while (cursor.moveToNext());
         }
         cursor.close();

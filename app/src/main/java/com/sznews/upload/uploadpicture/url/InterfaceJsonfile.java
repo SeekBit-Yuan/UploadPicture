@@ -11,5 +11,7 @@ public class InterfaceJsonfile {
     public static final String UPLOAD = "http://v1.sznews.com/appupload/uploads/streamupload";
     //主题上传
     public static final String UPLOAD_DUTY = "http://v1.sznews.com/appupload/Duty/UpdateDuty";
+    //上传完成触发接口地址
+    public static final String InterfaceUrl = "http://v1.sznews.com/appupload/uploads/trsupload";
 
 }

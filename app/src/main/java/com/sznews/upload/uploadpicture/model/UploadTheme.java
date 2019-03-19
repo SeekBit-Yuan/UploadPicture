@@ -5,6 +5,7 @@ public class UploadTheme {
     private String date;
     private String path;
     private String username;
+    private String author;
     private int userid;
     private String description;
     private String category1;
@@ -18,11 +19,12 @@ public class UploadTheme {
     public UploadTheme(){
     }
 
-    public UploadTheme(String theme,String date,String path,String username,int userid,String description,String category1,String category2,int dutyid,int sum,int num,int state){
+    public UploadTheme(String theme,String date,String path,String username,String author,int userid,String description,String category1,String category2,int dutyid,int sum,int num,int state){
         setTheme(theme);
         setDate(date);
         setPath(path);
         setUsername(username);
+        setUsername(author);
         setUserid(userid);
         setDescription(description);
         setCategory1(category1);
@@ -63,6 +65,14 @@ public class UploadTheme {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public String getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(String author) {
+        this.author = author;
     }
 
     public int getUserid() {

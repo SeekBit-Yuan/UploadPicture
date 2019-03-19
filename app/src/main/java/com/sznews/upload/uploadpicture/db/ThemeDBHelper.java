@@ -17,7 +17,7 @@ public class ThemeDBHelper extends SQLiteOpenHelper {
         //创建主题表subject和图片表picture
         String createSubjectTable = "create table subject (_id integer primary key autoincrement, " +
                 "category1 text, category2 text, theme text, " +
-                "create_date integer, soucre text, username text, uid int, " +
+                "create_date integer, soucre text, username text, author text, uid int, " +
                 "description text, path text, total int,uploaded int, dutyid int, state int)";
         String createPictureTable = "create table picture (_id integer primary key autoincrement, " +
                 "path text, title text,picid int, dutyid int, state int)";

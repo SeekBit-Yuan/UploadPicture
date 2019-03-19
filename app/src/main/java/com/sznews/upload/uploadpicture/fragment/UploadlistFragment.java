@@ -2,10 +2,12 @@ package com.sznews.upload.uploadpicture.fragment;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.media.ExifInterface;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -45,21 +47,23 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.List;
 
 import rx.Subscription;
+import rx.internal.operators.OnSubscribeDelaySubscriptionOther;
 
 public class UploadlistFragment extends Fragment {
 
     private UploadlistAdapter uploadlistAdapter;
     private List<UploadTheme> uploadThemeList = new ArrayList<>();
+
     //待上传主题
     private List<UploadTheme> ThemeList = new ArrayList<>();
     //所有图片
     private List<Picture> PictureListAll = new ArrayList<>();
-    //待上传图片
-    private List<Picture> PictureList = new ArrayList<>();
+
     //0表示通过UploadActivity按钮点击切换进入该fragment，1表示通过getActivity()上传按钮进入，code为1时触发上传方法
     private int code = 0;//是否从新建上传任务跳转判断码，0：不是；1：是
     private SQLiteDatabase db;
@@ -67,12 +71,14 @@ public class UploadlistFragment extends Fragment {
     //未完成主题id集合
     private List<String> ThemeId = new ArrayList<String>();
     private List<String> PictureId = new ArrayList<String>();
+    //该图片是否上传完成，0：已完成,-1：未开始，1：未完成
     private int isSuccess = 1;
+    //该主题是否上传完成，0：已完成
     private int isSuccess1 = 1;
-    //图片EXIF信息JSONObject
-    private JSONObject object1 = new JSONObject();
-    //图片信息JSONObject
-    private JSONObject object2 = new JSONObject();
+    //    //图片EXIF信息JSONObject
+//    private JSONObject object1 = new JSONObject();
+//    //图片信息JSONObject
+//    private JSONObject object2 = new JSONObject();
     //图片EXIF信息JSONArray
     private JSONArray array1 = new JSONArray();
     //图片录入信息JSONArray
@@ -80,6 +86,16 @@ public class UploadlistFragment extends Fragment {
 
     //    private BriteDatabase db;
     private Subscription suscription;
+
+    private Handler handler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case 0: uploadlistAdapter.notifyDataSetChanged();break;//更新上传列表数据
+            }
+
+        }
+    };
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -103,6 +119,7 @@ public class UploadlistFragment extends Fragment {
                 String date = cursor.getString(cursor.getColumnIndex("create_date"));
                 String path = cursor.getString(cursor.getColumnIndex("path"));
                 String username = cursor.getString(cursor.getColumnIndex("username"));
+                String author = cursor.getString(cursor.getColumnIndex("author"));
                 int userid = cursor.getColumnIndex("uid");
                 String description = cursor.getString(cursor.getColumnIndex("description"));
                 String category1 = cursor.getString(cursor.getColumnIndex("category1"));
@@ -110,10 +127,10 @@ public class UploadlistFragment extends Fragment {
                 int dutyid = cursor.getInt(cursor.getColumnIndex("dutyid"));
                 int sum = cursor.getInt(cursor.getColumnIndex("total"));
                 int num = cursor.getInt(cursor.getColumnIndex("uploaded"));
-                int state = cursor.getColumnIndex("state");//"0"：已上传成功，"1"：正在上传，"2"：暂停上传等待中
-                uploadThemeList.add(new UploadTheme(theme, date, path, username, userid, description, category1, category2, dutyid, sum, num, state));
+                int state = cursor.getInt(cursor.getColumnIndex("state"));//"0"：已上传成功，"1"：正在上传，"2"：暂停上传等待中
+                uploadThemeList.add(new UploadTheme(theme, date, path, username, author, userid, description, category1, category2, dutyid, sum, num, state));
                 if (state != 0) {
-                    ThemeList.add(new UploadTheme(theme, date, path, username, userid, description, category1, category2, dutyid, sum, num, state));
+                    ThemeList.add(new UploadTheme(theme, date, path, username, author, userid, description, category1, category2, dutyid, sum, num, state));
                 }
             } while (cursor.moveToNext());
         }
@@ -126,138 +143,18 @@ public class UploadlistFragment extends Fragment {
         listView.setAdapter(uploadlistAdapter);
         listView.setEmptyView(mEmptyTv);//上传列表为空占位布局
 
-//        //code！=0代表是从新建主题跳转过来，默认数据库已有主题全部上传完成，直接上传新建的图片和主题
-//        if (code != 0) {
-//            int n = uploadThemeList.size();
-//            //将新建任务图片加到PictureList中
-//            Cursor cursor1 = db.query("picture", null, "dutyid=?", new String[]{code + ""}, null, null, null);
-//            if (cursor1.moveToFirst()) {
-//                do {
-//                    int picid = cursor1.getInt(cursor1.getColumnIndex("_id"));
-//                    String path = cursor1.getString(cursor1.getColumnIndex("path"));
-//                    String title = cursor1.getString(cursor1.getColumnIndex("title"));
-//                    int dutyid = cursor1.getInt(cursor1.getColumnIndex("dutyid"));
-//                    int state = cursor1.getInt(cursor1.getColumnIndex("state"));//"0"：已上传成功，"1"：正在上传，"2"：暂停上传等待中
-//                    PictureList.add(new Picture(picid, title, path, dutyid, state));
-//                } while (cursor1.moveToNext());
-//            }
-//            cursor1.close();
-//            //上传PictureList中所有图片
-//            for (int i = 0; PictureList.size() > i; i++) {
-//                //上传单张图片
-//                upload(view, PictureList.get(i).getPic_path(), PictureList.get(i).getDutyid(), PictureList.get(i).getTitle());
-//                if (isSuccess == 0) {
-//                    ContentValues values0 = new ContentValues();
-//                    values0.put("state", 0);
-//                    //改变已上传图片状态
-//                    db.update("picture", values0, "_id = ?", new String[]{PictureList.get(i).getPicid() + ""});
-//                    uploadThemeList.get(n-1).setNum(i + 1);
-//                    ContentValues values = new ContentValues();
-//                    values.put("uploaded", i + 1);
-//                    //改变已上传完成数量值
-//                    db.update("subject", values, "dutyid = ?", new String[]{code + ""});
-//                    isSuccess = 1;
-//                    uploadlistAdapter.notifyDataSetChanged();//更新上传列表数据
-//                    System.out.println("num:" + uploadThemeList.get(n-1).getNum() + ",sum:" + uploadThemeList.get(n-1).getSum());
-//                    if (uploadThemeList.get(n-1).getNum() == uploadThemeList.get(n-1).getSum()) {
-//                        try {
-//                            object2.put("dutyid", uploadThemeList.get(n-1).getDutyid());
-//                            object2.put("dutyname", uploadThemeList.get(n-1).getTheme());
-//                            object2.put("username", uploadThemeList.get(n-1).getUsername());
-//                            object2.put("uid", uploadThemeList.get(n-1).getUserid());
-//                            object2.put("author", uploadThemeList.get(n-1).getUsername());
-//                            object2.put("description", uploadThemeList.get(n-1).getDescription());
-//                            object2.put("primaryClassification", uploadThemeList.get(n-1).getCategory1());
-//                            object2.put("secondaryClassification", uploadThemeList.get(n-1).getCategory2());
-//                            System.out.println("Theme:" + object2);
-//                        } catch (JSONException e) {}
-//                        //上传主题信息
-//                        new Thread(new Runnable() {
-//                            @Override
-//                            public void run() {
-//                                String result = UploadTheme();
-//                                //获取返回的登录情况
-//                                Gson gson = new GsonBuilder().create();
-//                                Result result1 = gson.fromJson(result, Result.class);
-//                                if (result1.getState().equals("1")) {
-//                                    System.out.println("================================主题信息上传失败！");
-//                                    Toast.makeText(getActivity(), "主题信息上传失败", Toast.LENGTH_SHORT).show();
-//                                } else if (result1.getState().equals("0")) {
-//                                    System.out.println("================================主题信息上传成功！");
-//                                    isSuccess1 = 0;
-//                                    ContentValues values1 = new ContentValues();
-//                                    values1.put("state", 0);
-//                                    //修改主题是否上传完成状态，"0"：已上传成功，"1"：未上传完成
-//                                    db.update("subject", values1, "dutyid = ?", new String[]{code + ""});
-//                                    uploadlistAdapter.notifyDataSetChanged();//更新上传列表数据
-//                                }
-//                            }
-//                        }).start();
-//                    }
-//                } else if (isSuccess == -1) {
-//                    Toast.makeText(getActivity(), "上传失败!!!", Toast.LENGTH_SHORT).show();
-//                    break;
+        //code！=0代表是从新建主题跳转过来，默认数据库已有主题全部上传完成，直接上传新建的图片和主题
+        if (code != 0) {
+//            new Thread(new Runnable() {
+//                @Override
+//                public void run() {
+//                    UploadFromNewbuild(uploadThemeList,code);
 //                }
-//            }
-//            if (isSuccess1 == 0){
-//                Toast.makeText(getActivity(), "上传成功!!!", Toast.LENGTH_SHORT).show();
-//            }
-//        }
+//            }).start();
+            UploadFromNewbuild(uploadThemeList,code);
+        }
 
         return view;
-    }
-
-    public void query() {
-        //参数依次是:表名，列名，where约束条件，where中占位符提供具体的值，指定group by的列，进一步约束
-        //查询结果加入到List<UploadTheme>中
-        Cursor cursor = db.query("subject", null, null, null, null, null, null);
-        if (cursor.moveToFirst()) {
-            do {
-                String theme = cursor.getString(cursor.getColumnIndex("theme"));
-                String date = cursor.getString(cursor.getColumnIndex("create_date"));
-                String path = cursor.getString(cursor.getColumnIndex("path"));
-                String username = cursor.getString(cursor.getColumnIndex("username"));
-                int userid = cursor.getInt(cursor.getColumnIndex("uid"));
-                String description = cursor.getString(cursor.getColumnIndex("description"));
-                String category1 = cursor.getString(cursor.getColumnIndex("category1"));
-                String category2 = cursor.getString(cursor.getColumnIndex("category2"));
-                int dutyid = cursor.getInt(cursor.getColumnIndex("dutyid"));
-                int sum = cursor.getInt(cursor.getColumnIndex("total"));
-                int num = cursor.getInt(cursor.getColumnIndex("uploaded"));
-                int state = cursor.getInt(cursor.getColumnIndex("state"));//"0"：已上传成功，"1"：正在上传，"2"：暂停上传等待中
-                uploadThemeList.add(new UploadTheme(theme, date, path, username, userid, description, category1, category2, dutyid, sum, num, state));
-                if (state != 0) {
-                    ThemeList.add(new UploadTheme(theme, date, path, username, userid, description, category1, category2, dutyid, sum, num, state));
-                    ThemeId.add(String.valueOf(dutyid));
-                }
-            } while (cursor.moveToNext());
-        }
-        cursor.close();
-
-        Cursor cursor1 = db.query("picture", null, null, null, null, null, null);
-        if (cursor1.moveToFirst()) {
-            do {
-                int picid = cursor1.getInt(cursor1.getColumnIndex("_id"));
-                String path = cursor1.getString(cursor1.getColumnIndex("path"));
-                String title = cursor1.getString(cursor1.getColumnIndex("title"));
-                int dutyid = cursor1.getInt(cursor1.getColumnIndex("dutyid"));
-                int state = cursor1.getInt(cursor1.getColumnIndex("state"));//"0"：已上传成功，"1"：正在上传，"2"：暂停上传等待中
-                PictureList.add(new Picture(picid, title, path, dutyid, state));
-                if (state != 0) {
-                    PictureList.add(new Picture(picid, title, path, dutyid, state));
-                    PictureId.add(String.valueOf(dutyid));
-                }
-            } while (cursor1.moveToNext());
-        }
-        cursor1.close();
-
-        ThemeId.removeAll(PictureId);
-        for (int i = 0; ThemeId.size() > i; i++) {
-            ContentValues values = new ContentValues();
-            values.put("state", 0);
-            //参数依次是表名，修改后的值，where条件，以及约束，如果不指定三四两个参数，会更改所有行
-            db.update("subject", values, "dutyid = ?", new String[]{ThemeId.get(i)});
-        }
     }
 
     @Override
@@ -272,58 +169,118 @@ public class UploadlistFragment extends Fragment {
         }
     }
 
-//    @Override
-//    public void onResume() {
-//        excuteQuery();
-//        super.onResume();
-//    }
-//
-//    /**
-//     * 长时间主题查询
-//     */
-//    private void excuteQuery() {
-//        //Observable<SqlBrite.Query> observable
-//        QueryObservable observable = this.db.createQuery(Data.TABLE_NAME, "select * from subject ORDER BY "+Data.ORDER_BY, null);
-//        suscription = observable.observeOn(AndroidSchedulers.mainThread()).subscribe(new Action1<SqlBrite.Query>() {
-//            @Override
-//            public void call(SqlBrite.Query query) {
-//                Cursor cursor = query.run();
-//                loadDataToUI(cursor);
-//            }
-//        });
-//    }
-//
-//    /**
-//     * 从Cursor获取数据加载到UI上
-//     *
-//     * @param cursor
-//     */
-//    public void loadDataToUI(Cursor cursor) {
-//        try {
-//            if (cursor != null && cursor.moveToFirst()) {
-//                do {
-//                    uploadThemeList.add(ValuesTransform.transformUploadTheme(cursor));
-//                } while (cursor.moveToNext());
-//                this.uploadlistAdapter.addData(uploadThemeList);
-//            }
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        } finally {
-//            if (cursor != null) {
-//                cursor.close();
-//            }
-//        }
-//    }
-//
-//    @Override
-//    public void onPause() {
-//        suscription.unsubscribe();
-//        super.onPause();
-//    }
+    //从新建主题跳转过来触发的上传方法
+    public void UploadFromNewbuild(List<UploadTheme> uploadThemeList, final int code){
 
+        //待上传图片
+        List<Picture> PictureList = new ArrayList<>();
+        //图片EXIF信息JSONObject
+        JSONObject object1 = new JSONObject();
+        //图片信息JSONObject
+        final JSONObject object2 = new JSONObject();
+
+        //上传主题列表数量
+        int n = uploadThemeList.size();
+        //将新建任务图片加到PictureList中
+        Cursor cursor1 = db.query("picture", null, "dutyid=?", new String[]{code + ""}, null, null, null);
+        if (cursor1.moveToFirst()) {
+            do {
+                int picid = cursor1.getInt(cursor1.getColumnIndex("_id"));
+                String path = cursor1.getString(cursor1.getColumnIndex("path"));
+                String title = cursor1.getString(cursor1.getColumnIndex("title"));
+                int dutyid = cursor1.getInt(cursor1.getColumnIndex("dutyid"));
+                int state = cursor1.getInt(cursor1.getColumnIndex("state"));//"0"：已上传成功，"1"：正在上传，"2"：暂停上传等待中
+                PictureList.add(new Picture(picid, title, path, dutyid, state));
+            } while (cursor1.moveToNext());
+        }
+        cursor1.close();
+        //上传PictureList中所有图片
+        for (int i = 0; PictureList.size() > i; i++) {
+            //上传单张图片
+            upload(PictureList.get(i).getPic_path(), PictureList.get(i).getDutyid(), PictureList.get(i).getTitle(), object1, PictureList, i, n, object2);
+
+//            if(isSuccess == 0){
+//                object1 = new JSONObject();
+//                ContentValues values0 = new ContentValues();
+//                values0.put("state", 0);
+//                //改变已上传图片状态
+//                db.update("picture", values0, "_id = ?", new String[]{PictureList.get(i).getPicid() + ""});
+//                uploadThemeList.get(n-1).setNum(i + 1);
+//                ContentValues values = new ContentValues();
+//                values.put("uploaded", i + 1);
+//                //改变已上传完成数量值
+//                db.update("subject", values, "dutyid = ?", new String[]{code + ""});
+//                isSuccess = -1;
+//                //uploadlistAdapter.notifyDataSetChanged();//更新上传列表数据
+//                System.out.println("num:" + uploadThemeList.get(n-1).getNum() + ",sum:" + uploadThemeList.get(n-1).getSum());
+//                if (uploadThemeList.get(n-1).getNum() == uploadThemeList.get(n-1).getSum()) {
+//                    try {
+//                        object2.put("dutyid", uploadThemeList.get(n-1).getDutyid());
+//                        object2.put("dutyname", uploadThemeList.get(n-1).getTheme());
+//                        object2.put("username", uploadThemeList.get(n-1).getUsername());
+//                        object2.put("uid", uploadThemeList.get(n-1).getUserid());
+//                        object2.put("author", uploadThemeList.get(n-1).getUsername());
+//                        object2.put("description", uploadThemeList.get(n-1).getDescription());
+//                        object2.put("primaryClassification", uploadThemeList.get(n-1).getCategory1());
+//                        object2.put("secondaryClassification", uploadThemeList.get(n-1).getCategory2());
+//                        System.out.println("Theme:" + object2);
+//                    } catch (JSONException e) {}
+//                    //上传主题信息
+//                    new Thread(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            String result = UploadTheme(object2);
+//                            //获取返回的上传情况
+//                            Gson gson = new GsonBuilder().create();
+//                            Result result1 = gson.fromJson(result, Result.class);
+//                            if (result1.getState().equals("1")) {
+//                                System.out.println("================================主题信息上传失败！");
+//                                isSuccess1 = -1;
+//                                Toast.makeText(getActivity(), "主题信息上传失败", Toast.LENGTH_SHORT).show();
+//                            } else if (result1.getState().equals("0")) {
+//                                System.out.println("================================主题信息上传成功！");
+//                                isSuccess1 = 0;
+//                                ContentValues values1 = new ContentValues();
+//                                values1.put("state", 0);
+//                                //修改主题是否上传完成状态，"0"：已上传成功，"1"：未上传完成
+//                                db.update("subject", values1, "dutyid = ?", new String[]{code + ""});
+//                                //uploadlistAdapter.notifyDataSetChanged();//更新上传列表数据
+//                                Message msg = new Message();
+//                                msg.what = 0;
+//                                handler.sendMessage(msg);
+//                                Interface(object2);
+//                            }
+//                        }
+//                    }).start();
+//                }
+//            } else if (isSuccess == -1) {
+//                Toast.makeText(getActivity(), "上传失败!!!", Toast.LENGTH_SHORT).show();
+//                ContentValues values = new ContentValues();
+//                values.put("state", 2);
+//                //修改主题是否上传完成状态，"0"：已上传成功，"1"：未上传完成，"2"：上传任务暂停
+//                db.update("subject", values, "dutyid = ?", new String[]{code + ""});
+//                uploadlistAdapter.notifyDataSetChanged();//更新上传列表数据
+//                break;
+//            }
+        }
+
+        if (isSuccess1 == 0){
+            Toast.makeText(getActivity(), "上传成功!!!", Toast.LENGTH_SHORT).show();
+        }else if (isSuccess1 == -1) {
+            ContentValues values = new ContentValues();
+            values.put("state", 2);
+            //修改主题是否上传完成状态，"0"：已上传成功，"1"：未上传完成，"2"：上传任务暂停
+            db.update("subject", values, "dutyid = ?", new String[]{code + ""});
+            uploadlistAdapter.notifyDataSetChanged();//更新上传列表数据
+
+        }
+    }
 
     //上传图片文件方法
-    public void upload(View v, final String path, int dutyid, String title) {
+    public void upload(final String path, int dutyid, String title, final JSONObject object1, final List<Picture> PictureList, final int i, final int n, final JSONObject object2) {
+        SharedPreferences sp = getActivity().getSharedPreferences("userInfo", Context.MODE_PRIVATE);
+        String token = sp.getString("token", "");
+        String username = sp.getString("username", "");
         //String url = "http://172.16.137.198:8080/VueServer/upload";
         if (path != null && !path.equals("")) {
             String url = InterfaceJsonfile.UPLOAD;
@@ -332,10 +289,12 @@ public class UploadlistFragment extends Fragment {
             params.setMultipart(true);
             params.addBodyParameter("file", new File(path));
             try {
-                GetExifInfo(path);
+                GetExifInfo(path, object1);
                 String s = URLEncoder.encode(path.substring(path.lastIndexOf("/") + 1), "utf-8");
                 params.addBodyParameter("dutyid", String.valueOf(dutyid));
                 params.addBodyParameter("title", title);
+                params.addBodyParameter("token", token);
+                params.addBodyParameter("username", username);
                 params.addBodyParameter("exif_camera", object1.getString("exif_camera"));//	照相机型号
                 params.addBodyParameter("exif_mfrs", object1.getString("exif_mfrs"));// 制造商
                 params.addBodyParameter("exif_shottime", object1.getString("exif_shottime"));// 拍摄时间
@@ -348,56 +307,117 @@ public class UploadlistFragment extends Fragment {
                 params.addBodyParameter("exif_et", object1.getString("exif_et"));// 曝光时间
                 params.addBodyParameter("exif_ec", object1.getString("exif_ec"));// 曝光补偿
                 params.addBodyParameter("exif_wb", object1.getString("exif_wb"));// 白平衡
+
                 System.out.println("dutyid:" + String.valueOf(dutyid) + ",title:" + title + ",object:" + object1);
-                isSuccess = 0;
+
+                x.http().post(params, new Callback.CommonCallback<String>() {
+                    @Override
+                    public void onSuccess(String result) {
+
+                        int savePathIndex = result.indexOf("savePath");
+                        if (savePathIndex == -1){
+                            isSuccess = -1;
+                        } else {
+                            isSuccess = 0;
+                            System.out.println("===============单张图片上传成功"  + result);
+                            UploadStatus(object1, PictureList, i, n, object2);
+                        }
+
+                    }
+
+                    @Override
+                    public void onError(Throwable ex, boolean isOnCallback) {
+                        System.out.println("===============单张图片上传失败");
+                        ex.printStackTrace();
+                        Toast.makeText(getActivity(), "图片上传失败", Toast.LENGTH_SHORT).show();
+                        isSuccess = -1;
+
+                    }
+
+                    @Override
+                    public void onCancelled(CancelledException cex) {
+                    }
+
+                    @Override
+                    public void onFinished() {
+                    }
+                });
+
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-
-//            //设置上传提示框
-//            final ZLoadingDialog dialog = new ZLoadingDialog(getActivity());
-//            dialog.setLoadingBuilder(Z_TYPE.STAR_LOADING)//设置类型
-//                    .setLoadingColor(Color.BLACK)//颜色
-//                    .setHintText("上传中...")
-//                    .setCanceledOnTouchOutside(false)
-//                    .show();
-
-            x.http().post(params, new Callback.CommonCallback<String>() {
-                @Override
-                public void onSuccess(String result) {
-                    System.out.println("===============图片上传成功"  + result);
-//                    dialog.dismiss();//上传成功后关闭提示框
-//                    Toast.makeText(getActivity(), "图片上传成功", Toast.LENGTH_SHORT).show();
-                    isSuccess = 0;
-                    object1 =new JSONObject();
-                }
-
-                @Override
-                public void onError(Throwable ex, boolean isOnCallback) {
-                    System.out.println("===============图片上传失败");
-                    ex.printStackTrace();
-//                    dialog.dismiss();//上传失败后关闭提示框
-                    Toast.makeText(getActivity(), "图片上传失败", Toast.LENGTH_SHORT).show();
-                    isSuccess = -1;
-                }
-
-                @Override
-                public void onCancelled(CancelledException cex) {
-                }
-
-                @Override
-                public void onFinished() {
-                }
-            });
-        } else {
+        }else {
             Toast.makeText(getActivity(), "请选择图片，再上传", Toast.LENGTH_SHORT).show();
         }
     }
 
+    //判断图片上传进度以及上传主题
+    public void UploadStatus(JSONObject object1, List<Picture> PictureList, int i, int n, final JSONObject object2){
+        SharedPreferences sp = getActivity().getSharedPreferences("userInfo", Context.MODE_PRIVATE);
+        String token = sp.getString("token", "");
+        String username = sp.getString("username", "");
+
+        object1 = new JSONObject();
+        ContentValues values0 = new ContentValues();
+        values0.put("state", 0);
+        //改变已上传图片状态
+        db.update("picture", values0, "_id = ?", new String[]{PictureList.get(i).getPicid() + ""});
+        uploadThemeList.get(n-1).setNum(i + 1);
+        ContentValues values = new ContentValues();
+        values.put("uploaded", i + 1);
+        //改变已上传完成数量值
+        db.update("subject", values, "dutyid = ?", new String[]{code + ""});
+        isSuccess = -1;
+        //uploadlistAdapter.notifyDataSetChanged();//更新上传列表数据
+        System.out.println("num:" + uploadThemeList.get(n-1).getNum() + ",sum:" + uploadThemeList.get(n-1).getSum());
+        if (uploadThemeList.get(n-1).getNum() == uploadThemeList.get(n-1).getSum()) {
+            try {
+                object2.put("dutyid", uploadThemeList.get(n-1).getDutyid());
+                object2.put("dutyname", uploadThemeList.get(n-1).getTheme());
+                object2.put("username", username);
+                object2.put("uid", uploadThemeList.get(n-1).getUserid());
+                object2.put("author", uploadThemeList.get(n-1).getUsername());
+                object2.put("description", uploadThemeList.get(n-1).getDescription());
+                object2.put("primaryClassification", uploadThemeList.get(n-1).getCategory1());
+                object2.put("secondaryClassification", uploadThemeList.get(n-1).getCategory2());
+                System.out.println("Theme:" + object2);
+            } catch (JSONException e) {}
+            //上传主题信息
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    String result = UploadTheme(object2);
+                    //获取返回的上传情况
+                    Gson gson = new GsonBuilder().create();
+                    Result result1 = gson.fromJson(result, Result.class);
+                    if (result1.getState().equals("1")) {
+                        System.out.println("================================主题信息上传失败！");
+                        isSuccess1 = -1;
+                        Toast.makeText(getActivity(), "主题信息上传失败", Toast.LENGTH_SHORT).show();
+                    } else if (result1.getState().equals("0")) {
+                        System.out.println("================================主题信息上传成功！");
+                        isSuccess1 = 0;
+                        ContentValues values1 = new ContentValues();
+                        values1.put("state", 0);
+                        //修改主题是否上传完成状态，"0"：已上传成功，"1"：未上传完成
+                        db.update("subject", values1, "dutyid = ?", new String[]{code + ""});
+                        //uploadlistAdapter.notifyDataSetChanged();//更新上传列表数据
+                        Message msg = new Message();
+                        msg.what = 0;
+                        handler.sendMessage(msg);
+                        Interface(object2);
+                    }
+                }
+            }).start();
+        }
+    }
+
     //主题上传
-    public String UploadTheme() {
+    public String UploadTheme(JSONObject object2) {
+        SharedPreferences sp = getActivity().getSharedPreferences("userInfo", Context.MODE_PRIVATE);
+        String token = sp.getString("token", "");
         String path = InterfaceJsonfile.UPLOAD_DUTY;
         URL url;
         String lines = "";
@@ -418,6 +438,7 @@ public class UploadlistFragment extends Fragment {
             sb.append("{\"dutyid\":\"").append(object2.getString("dutyid")).append("\"")
                     .append(",\"dutyname\":\"").append(object2.getString("dutyname")).append("\"")
                     .append(",\"username\":\"").append(object2.getString("username")).append("\"")
+                    .append(",\"token\":\"").append(token).append("\"")
                     .append(",\"userid\":\"").append(object2.getString("uid")).append("\"")
                     .append(",\"author\":\"").append(object2.getString("author")).append("\"")
                     .append(",\"description\":\"").append(object2.getString("description")).append("\"")
@@ -441,63 +462,50 @@ public class UploadlistFragment extends Fragment {
         return lines;
     }
 
-    //主题上传
-    public void upload1(View v, int dutyid) throws JSONException {
-        String url = InterfaceJsonfile.UPLOAD_DUTY;
-
-        System.out.println("object2:" + object2);
-        RequestParams params = new RequestParams(url);
-        params.setMultipart(true);
-        params.addBodyParameter("dutyid", object2.getString("dutyid"));
-        params.addBodyParameter("dutyname", object2.getString("dutyname"));
-        params.addBodyParameter("username", object2.getString("username"));
-        params.addBodyParameter("userid", object2.getString("uid"));
-        params.addBodyParameter("author", object2.getString("author"));
-        params.addBodyParameter("description", object2.getString("description"));
-        params.addBodyParameter("primaryClassification", object2.getString("primaryClassification"));
-        params.addBodyParameter("secondaryClassification", object2.getString("secondaryClassification"));
-        isSuccess1 = 0;
-
-//            //设置上传提示框
-//            final ZLoadingDialog dialog = new ZLoadingDialog(getActivity());
-//            dialog.setLoadingBuilder(Z_TYPE.STAR_LOADING)//设置类型
-//                    .setLoadingColor(Color.BLACK)//颜色
-//                    .setHintText("上传中...")
-//                    .setCanceledOnTouchOutside(false)
-//                    .show();
-
-        x.http().post(params, new Callback.CommonCallback<String>() {
-            @Override
-            public void onSuccess(String result) {
-                System.out.println("===============主题上传成功"  + result);
-//                    dialog.dismiss();//上传成功后关闭提示框
-//                Toast.makeText(getActivity(), "上传成功", Toast.LENGTH_SHORT).show();
-                isSuccess1 = 0;
-                object2 =new JSONObject();
-            }
-
-            @Override
-            public void onError(Throwable ex, boolean isOnCallback) {
-                System.out.println("===============主题上传失败");
-                ex.printStackTrace();
-//                    dialog.dismiss();//上传失败后关闭提示框
-                Toast.makeText(getActivity(), "主题上传失败", Toast.LENGTH_SHORT).show();
-                isSuccess1 = -1;
-            }
-
-            @Override
-            public void onCancelled(CancelledException cex) {
-            }
-
-            @Override
-            public void onFinished() {
-            }
-        });
+    //上传完成触发接口
+    public String Interface(JSONObject object2) {
+        SharedPreferences sp = getActivity().getSharedPreferences("userInfo", Context.MODE_PRIVATE);
+        String token = sp.getString("token", "");
+        String path = InterfaceJsonfile.InterfaceUrl;
+        URL url;
+        String lines = "";
+        try {
+            url = new URL(path);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("POST");// 提交模式
+            //是否允许输入输出
+            conn.setDoInput(true);
+            conn.setDoOutput(true);
+            //设置请求头里面的数据，以下设置用于解决http请求code415的问题
+            conn.setRequestProperty("Content-Type", "application/json");
+            //链接地址
+            conn.connect();
+            OutputStreamWriter writer = new OutputStreamWriter(conn.getOutputStream());
+            //发送参数
+            StringBuffer sb = new StringBuffer();
+            sb.append("{\"dutyid\":\"").append(object2.getString("dutyid")).append("\"")
+                    .append(",\"username\":\"").append(object2.getString("username")).append("\"")
+                    .append(",\"token\":\"").append(token).append("\"")
+                    .append("}");
+            writer.write(sb.toString());
+            //清理当前编辑器的左右缓冲区，并使缓冲区数据写入基础流
+            writer.flush();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(
+                    conn.getInputStream()));
+            lines = reader.readLine();//读取请求结果
+            System.out.println("lines:"+lines);
+            reader.close();
+            conn.disconnect();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return lines;
     }
 
-
     //获取EXIF信息
-    public void GetExifInfo(String path) {
+    public JSONObject GetExifInfo(String path, JSONObject object1) {
 
         try {
             ExifInterface exifInterface = new ExifInterface(
@@ -581,5 +589,6 @@ public class UploadlistFragment extends Fragment {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+        return object1;
     }
 }

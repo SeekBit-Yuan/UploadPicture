@@ -2,6 +2,7 @@ package com.sznews.upload.uploadpicture.utils;
 
 
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -179,6 +180,33 @@ public class CodeUtils {
             e.printStackTrace();
             System.out.println("==========================");
         }*/
+        return null;
+    }
+
+    /**
+     * 获取验证码
+     * @return 获取到的验证码图片
+     */
+    public Bitmap getVerifyCodePictuer() {
+        try {
+            HttpURLConnection conn = (HttpURLConnection) new URL("http://v1.sznews.com/appupload/User/GetCheckCode?guid=1234567890").openConnection();
+            conn.setConnectTimeout(5000);
+            conn.setRequestMethod("GET");
+            if(conn.getResponseCode() == 200){
+                InputStream inputStream = conn.getInputStream();
+                Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+                inputStream.close();
+                System.out.println("++++++++++++++++++++++++++++++++++++获取图片成功");
+                return bitmap;
+            }
+            conn.disconnect();
+            System.out.println("++++++++++++++++++++++++++++++++++++获取图片失败1");
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("++++++++++++++++++++++++++++++++++++获取图片失败2");
+        } finally {
+
+        }
         return null;
     }
 }

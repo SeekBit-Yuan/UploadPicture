@@ -34,7 +34,7 @@
                 android:id="@+id/newbuild_line1"
                 android:layout_width="match_parent"
                 android:layout_height="32dp"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="8dp"
                 android:orientation="horizontal">
 
                 <TextView
@@ -58,7 +58,7 @@
                 android:id="@+id/newbuild_line2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="8dp"
                 android:orientation="horizontal">
 
                 <TextView
@@ -82,7 +82,7 @@
                 android:id="@+id/newbuild_line3"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="8dp"
                 android:orientation="horizontal">
 
                 <TextView
@@ -157,7 +157,7 @@
                 android:id="@+id/newbuild_line6"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="8dp"
                 android:orientation="horizontal">
 
                 <TextView
@@ -168,20 +168,31 @@
                     android:text="作者 :"
                     android:textSize="18sp"></TextView>
 
-                <TextView
-                    android:id="@+id/username"
-                    android:layout_width="95dp"
+                <!--<TextView-->
+                    <!--android:id="@+id/username"-->
+                    <!--android:layout_width="95dp"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:layout_marginRight="20dp"-->
+                    <!--android:text=""-->
+                    <!--android:textSize="18sp"></TextView>-->
+
+                <EditText
+                    android:id="@+id/author"
+                    android:layout_width="205dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginRight="20dp"
-                    android:text=""
-                    android:textSize="18sp"></TextView>
+                    android:layout_weight="1"
+                    android:ems="10"
+                    android:hint="请输入作者名称"
+                    android:inputType="textPersonName"
+                    android:textColor="#AEAEAE"
+                    android:textSize="18sp" />
             </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/newbuild_line7"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="8dp"
                 android:orientation="horizontal">
 
                 <TextView
@@ -215,7 +226,7 @@
                 android:id="@+id/newbuild_line8"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="8dp"
                 android:orientation="horizontal">
 
                 <TextView
