@@ -100,8 +100,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         submit.setOnClickListener(this);
         imgVerify.setOnClickListener(this);
 
-        //获取机器码
-//        getDeviceID();
+        //获取机器码，并保存
+        SharedPreferences.Editor editor = sp.edit();
+        editor.putString("deviceID", getDeviceID());
+        editor.commit();
+        System.out.println("+++++++++++++++++++++++++++++++++++机器码:" + getDeviceID());
 
         //进入页面时先自动获取验证码
         createVerifyImage();
@@ -205,13 +208,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     //绘制验证码图片
     public void createVerifyImage() {
+        SharedPreferences sp = this.getSharedPreferences("userInfo", Context.MODE_PRIVATE);
+        final String deviceID = sp.getString("deviceID", "");
         codeUtils = CodeUtils.getInstance();
         new Thread(new Runnable() {
             @Override
             public void run() {
                 //Bitmap bitmap = codeUtils.createBitmap();
                 //String code = codeUtils.getCode();
-                Bitmap bitmap = codeUtils.getVerifyCodePictuer();
+                Bitmap bitmap = codeUtils.getVerifyCodePictuer(deviceID);
                 //判断验证码是否获取成功,成功则绘制验证码并显示，不成功则显示默认图片
                 //if (code != null && !code.equals("")){
                 if (bitmap != null){
@@ -229,13 +234,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void saveUserInfo() {
         //默认自动存储用户名
         SharedPreferences sp = this.getSharedPreferences("userInfo", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sp.edit();
-        editor.putString("username", usernameStr);
-        //判断是否存储密码
-        if (rememberPassword.isChecked()) {
-            editor.putString("password", passwordStr);
-            editor.putBoolean("isSave", true);
-        } else {
+            SharedPreferences.Editor editor = sp.edit();
+            editor.putString("username", usernameStr);
+            //判断是否存储密码
+            if (rememberPassword.isChecked()) {
+                editor.putString("password", passwordStr);
+                editor.putBoolean("isSave", true);
+            } else {
             editor.putString("password", "");
             editor.putBoolean("isSave", false);
         }
@@ -269,13 +274,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             String signature = Utils.getSignature(user);
             System.out.println(signature);
             StringBuffer sb = new StringBuffer();
+            SharedPreferences sp = this.getSharedPreferences("userInfo", Context.MODE_PRIVATE);
+            String deviceID = sp.getString("deviceID", "");
             sb.append("{\"username\":\"").append(usernameStr).append("\"")
                     .append(",\"userpass\":\"").append(passwordStr).append("\"")
                     .append(",\"appid\":\"").append(user.getAppid()).append("\"")
                     .append(",\"signature\":\"").append(signature).append("\"")
                     .append(",\"timestamp\":\"").append(user.getTimestamp()).append("\"")
                     .append(",\"checkcode\":\"").append(verifyStr).append("\"")
-                    .append(",\"guid\":\"").append("1234567890").append("\"")
+                    .append(",\"guid\":\"").append(deviceID).append("\"")
                     .append(",\"nonce\":\"").append(user.getNonce()).append("\"")
                     .append(",\"appsecret\":\"").append(user.getAppsecret()).append("\"")
                     .append("}");
@@ -298,16 +305,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         return lines;
     }
 
-//    @SuppressLint("MissingPermission")
-//    private String getDeviceID(){
-//        final TelephonyManager tm = (TelephonyManager) getBaseContext().getSystemService(Context.TELEPHONY_SERVICE);
-//        final String tmDevice, tmSerial, tmPhone, androidId;
-//        tmDevice = "" + tm.getDeviceId();
-//        tmSerial = "" + tm.getSimSerialNumber();
-//        androidId = "" + android.provider.Settings.Secure.getString(getContentResolver(), android.provider.Settings.Secure.ANDROID_ID);
-//        UUID deviceUuid = new UUID(androidId.hashCode(), ((long)tmDevice.hashCode() << 32) | tmSerial.hashCode());
-//        String uniqueId = deviceUuid.toString();
-//        return uniqueId;
-//    }
+    @SuppressLint("MissingPermission")
+    private String getDeviceID(){
+        final TelephonyManager tm = (TelephonyManager) getBaseContext().getSystemService(Context.TELEPHONY_SERVICE);
+        final String tmDevice, tmSerial, tmPhone, androidId;
+        tmDevice = "" + tm.getDeviceId();
+        tmSerial = "" + tm.getSimSerialNumber();
+        androidId = "" + android.provider.Settings.Secure.getString(getContentResolver(), android.provider.Settings.Secure.ANDROID_ID);
+        UUID deviceUuid = new UUID(androidId.hashCode(), ((long)tmDevice.hashCode() << 32) | tmSerial.hashCode());
+        String uniqueId = deviceUuid.toString();
+        return uniqueId;
+    }
 
 }

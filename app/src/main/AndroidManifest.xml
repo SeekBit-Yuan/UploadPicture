@@ -41,6 +41,10 @@
         android:theme="@style/Theme.AppCompat.Light.NoActionBar"
         android:name=".utils.MyAppApplication">
         <activity android:name=".activity.MainActivity" android:windowSoftInputMode="adjustPan|stateHidden" >
+
+        </activity>
+
+        <activity android:name=".activity.CheckPermissionActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -52,8 +56,6 @@
         <activity android:name=".activity.UploadActivity"></activity>
 
         <activity android:name=".activity.ThemeInfoActivity"></activity>
-
-        <activity android:name=".activity.PermissionsActivity"></activity>
 
     </application>
 
