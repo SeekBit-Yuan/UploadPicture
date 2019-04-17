@@ -187,9 +187,9 @@ public class CodeUtils {
      * 获取验证码
      * @return 获取到的验证码图片
      */
-    public Bitmap getVerifyCodePictuer() {
+    public Bitmap getVerifyCodePictuer(String guid) {
         try {
-            HttpURLConnection conn = (HttpURLConnection) new URL("http://v1.sznews.com/appupload/User/GetCheckCode?guid=1234567890").openConnection();
+            HttpURLConnection conn = (HttpURLConnection) new URL("http://v1.sznews.com/appupload/User/GetCheckCode?guid=" + guid).openConnection();
             conn.setConnectTimeout(5000);
             conn.setRequestMethod("GET");
             if(conn.getResponseCode() == 200){
